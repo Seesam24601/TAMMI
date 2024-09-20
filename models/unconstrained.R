@@ -14,18 +14,70 @@ unconstrained <- function(assets,
                           end_year) {
   "
   Parameters:
-    assets
-    asset_types
+    assets - Dataframe containing one row for every asset. It must have the following
+      fields:
+        > asset_it: Must be unique
+        > asset_type_id: Must be present in asset_types$asset_type_id
+        > year_built: Year the asset was created. This is used to calculate the age of 
+            the asset. Cannot be greater than or equal to start_year. Must be an integer
+            value.
+    asset_types - Dataframe containing one row for each type of asset. It must have the
+      following fields:
+        > asset_types_id: Must be unique
+        > useful_life: The age in years that the asset must be replacement. Must be an
+            integer value
+        > replacement_cost: The cost to replace the asset in US dollars. Must be an
+            integer value.
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
       integer value. This should >= start_year.
 
   Returns:
+    A datframe that contains one record for every replacement action necessary to
+    maintain a state of good repair. This has the following fields:
+      > year: The year the replacement should be made
+      > asset_id: asset_id of the asset that will need replacement
+      > asset_type_id: asset_type_id of the asset that will need replacement
+      > replacement_cost: cost of the replacement
   "
-
+  
   # Assert that start_year and end_year and integers and start_year <= end_year
   year_order(start_year, end_year)
 
+  # Assert that the asset_types dataframe meets its requirements
+  test_asset_types(asset_types)
 
+  # Assert that the assets dataframe meets its requirements
+  test_assets(assets, asset_types, start_year)
+
+  # Left join asset_types on to assets
+  asset_details <- assets %>% 
+    merge(asset_types, by = "asset_type_id")
+
+  # For each year between start_year and end_year (including both), note every asset
+  # that needs to be replaced and update its value in asset_details
+  replacements <- list()
+  for (year in start_year:end_year){
+    
+    # Get a list of replacements that need to be made in year
+    replacements[[year]] <- asset_details %>% 
+
+      # Find assets who have reached the end of their useful life
+      filter(year - year_built >= useful_life) %>% 
+
+      # Add the year of the replacement as a column
+      mutate(year = year) %>% 
+      
+      subset(select = c(year, asset_id, asset_type_id, replacement_cost))
+
+    # Update year_built for assets that have been replaced
+    asset_details <- asset_details %>% 
+      mutate(year_built = ifelse(asset_id %in% replacements[[year]]$asset_id,
+                                 year,
+                                 year_built))
+  }
+
+  # Combine all years worth of replacements into a single dataframe
+  do.call(rbind, replacements)
 }
