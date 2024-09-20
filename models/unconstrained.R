@@ -45,5 +45,33 @@ unconstrained <- function(assets,
   # Assert that start_year and end_year and integers and start_year <= end_year
   year_order(start_year, end_year)
 
+  # Left join asset_types on to assets
+  asset_details <- assets %>% 
+    merge(asset_types, by = "asset_type_id")
 
+  # For each year between start_year and end_year (including both), note every asset
+  # that needs to be replaced and update its value in asset_details
+  replacements <- list()
+  for (year in start_year:end_year){
+    
+    # Get a list of replacements that need to be made in year
+    replacements[[year]] <- asset_details %>% 
+
+      # Find assets who have reached the end of their useful life
+      filter(year - year_built >= useful_life) %>% 
+
+      # Add the year of the replacement as a column
+      mutate(year = year) %>% 
+      
+      subset(select = c(year, asset_id, asset_type_id, replacement_cost))
+
+    # Update year_built for assets that have been replaced
+    asset_details <- asset_details %>% 
+      mutate(year_built = ifelse(asset_id %in% replacements[[year]]$asset_id,
+                                 year,
+                                 year_built))
+  }
+
+  # Combine all years worth of replacements into a single dataframe
+  do.call(rbind, replacements)
 }

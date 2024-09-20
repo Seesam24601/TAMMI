@@ -9,7 +9,4 @@ source(here("models/unconstrained.R"))
 assets <- read_delim(here("tests/test_files/assets.csv"), show_col_types = FALSE)
 asset_types <- read_delim(here("tests/test_files/asset_types.csv"), show_col_types = FALSE)
 
-unconstrained(assets,
-              asset_types,
-              2000,
-              2020)
+results <- unconstrained(assets, asset_types, 2000,2020)
