@@ -4,24 +4,28 @@
 library(tidyverse)
 library(here)
 
+source(here("functions/preflight.R"))
+
 
 # ---- unconstrained ----
-unconstrained <- function(asset_file_path = "inputs/assets.csv",
-                          asset_type_file_path = "inputs/asset_types.csv") {
+unconstrained <- function(assets,
+                          asset_types,
+                          start_year,
+                          end_year) {
   "
   Parameters:
-    asset_file_path - File path to the location of the assets CSV file. This is 
-      inputs/assets.csv by default. File path should be relative to the TAMMI folder.
-    asset_type_file_path - File path to the location of the asset types CSV file. This is 
-      inputs/asset_types.csv by default. File path should be relative to the TAMMI 
-      folder.
+    assets
+    asset_types
+    start_year - The first year the model calculates actions for. This should be an
+      integer value. This should be <= end_year.
+    end_year - That last year the model calculates actions for. This should be an
+      integer value. This should >= start_year.
 
   Returns:
   "
 
-  # Load inputs
-  assets <- read_delim(here(asset_file_path), show_col_types = FALSE)
-  asset_types <- read_delim(here(asset_type_file_path), show_col_types = FALSE)
+  # Assert that start_year and end_year and integers and start_year <= end_year
+  year_order(start_year, end_year)
 
 
 }
