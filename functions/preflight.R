@@ -86,7 +86,16 @@ is_unique_col <- function(col, df_name, col_name) {
 }
 
 
-test_assets <- function(assets, asset_types) {
+test_assets <- function(assets, asset_types, start_year) {
+  "
+  Parameters:
+    assets 
+    asset_types
+    start_year
+
+  Returns:
+    Nothing if assets meets its assumptions. Throws an appropriate error otherwise.
+  "
 
   # Assert asset_id is unique
   is_unique_col(assets$asset_id, "assets", "asset_id")
@@ -100,10 +109,23 @@ test_assets <- function(assets, asset_types) {
 
   # Assert year_built is integer-valued
   is_integer_col(assets$year_built, "assets", "year_built")
+
+  # Assert year_built < start_year
+  error_message <- paste("Not all values in year_built in assets are strictly less than start_year")
+  if (!all(assets$year_built < start_year)) {
+    stop(error_message, call. = FALSE)
+  }
 }
 
 
 test_asset_types <- function(asset_types) {
+  "
+  Parameters:
+    asset_types
+
+  Returns:
+    Nothing if asset_types meets its assumptions. Throws an appropriate error otherwise.
+  "
 
   # Assert asset_type_id is unique
   is_unique_col(asset_types$asset_type_id, "asset_types", "asset_type_id")

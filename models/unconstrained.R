@@ -36,14 +36,14 @@ unconstrained <- function(assets,
   Returns:
   "
   
-  # Assert that the assets dataframe meets its requirements
-  test_assets(assets, asset_types)
+  # Assert that start_year and end_year and integers and start_year <= end_year
+  year_order(start_year, end_year)
 
   # Assert that the asset_types dataframe meets its requirements
   test_asset_types(asset_types)
 
-  # Assert that start_year and end_year and integers and start_year <= end_year
-  year_order(start_year, end_year)
+  # Assert that the assets dataframe meets its requirements
+  test_assets(assets, asset_types, start_year)
 
   # Left join asset_types on to assets
   asset_details <- assets %>% 
