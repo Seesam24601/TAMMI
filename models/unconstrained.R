@@ -5,13 +5,15 @@ library(tidyverse)
 library(here)
 
 source(here("functions/preflight.R"))
+source(here("functions/necessary_actions.R"))
 
 
 # ---- unconstrained ----
 unconstrained <- function(assets,
                           asset_types,
                           start_year,
-                          end_year) {
+                          end_year,
+                          necessary_actions = replace_by_age) {
   "
   Parameters:
     assets - Dataframe containing one row for every asset. It must have the following
@@ -32,6 +34,8 @@ unconstrained <- function(assets,
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
       integer value. This should >= start_year.
+    necessary_actions - A function that meets the parameters laid out in
+      functions/necessary_actions.R. replace_by_age by default.
 
   Returns:
     A datframe that contains one record for every replacement action necessary to
@@ -63,8 +67,8 @@ unconstrained <- function(assets,
     # Get a list of replacements that need to be made in year
     replacements[[year]] <- asset_details %>% 
 
-      # Find assets who have reached the end of their useful life
-      filter(year - year_built >= useful_life) %>% 
+      # Get the subset of assets that need to be replaced in year
+      necessary_actions(year) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = year) %>% 
