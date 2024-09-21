@@ -6,6 +6,7 @@ library(here)
 
 source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
+source(here("functions/cost_adjustment.R"))
 
 
 # ---- unconstrained ----
@@ -13,7 +14,8 @@ unconstrained <- function(assets,
                           asset_types,
                           start_year,
                           end_year,
-                          necessary_actions = replace_by_age) {
+                          necessary_actions = replace_by_age,
+                          cost_adjustment = inflation) {
   "
   Parameters:
     assets - Dataframe containing one row for every asset. It must have the following
@@ -36,6 +38,8 @@ unconstrained <- function(assets,
       integer value. This should >= start_year.
     necessary_actions - A function that meets the parameters laid out in
       functions/necessary_actions.R. replace_by_age by default.
+    cost_adjustment - A function that meets the requirements laid out in
+      functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
 
   Returns:
     A datframe that contains one record for every replacement action necessary to
@@ -69,6 +73,9 @@ unconstrained <- function(assets,
 
       # Get the subset of assets that need to be replaced in year
       necessary_actions(year) %>% 
+      
+      # Apply cost adjustments
+      cost_adjustment(year, start_year) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = year) %>% 

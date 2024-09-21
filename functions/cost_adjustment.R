@@ -23,12 +23,12 @@ inflation <- function(asset_details,
     The asset_details dataframe with the replacement_cost column updated to reflect the
     inflation that is expected to occur between year and start_year. Inflation is 
     calculated as occuring at inflation_rate starting at start_year and compounding
-    annually
+    annually. The results are rounded to two decimal places.
   "
 
   # Assert that start_year and year are both integer-valued and that year >= start_year
   year_order(start_year, year)
 
   asset_details %>% 
-    mutate(replacement_cost = replacement_cost * (1 + inflation_rate)^(year - start_year))
+    mutate(replacement_cost = round(replacement_cost * (1 + inflation_rate)^(year - start_year), 2))
 }

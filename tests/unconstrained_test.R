@@ -11,12 +11,12 @@ assets <- read_delim(here("tests/test_files/assets.csv"),
 asset_types <- read_delim(here("tests/test_files/asset_types.csv"), 
                           col_types = "iii")
 unconstrained_actions <- read_delim(here("tests/test_files/unconstrained_actions.csv"),
-                                    col_types = "iiii")
+                                    col_types = "iiid")
 
 # Run unconstrained model
 results <- unconstrained(assets, asset_types, 2000, 2020)
 
 # Verify results
-if (!identical(as.tibble(results), as.tibble(unconstrained_actions))) {
+if (!identical(as_tibble(results), as_tibble(unconstrained_actions))) {
   stop("Unconstrained model is not functioning as intended")
 }
