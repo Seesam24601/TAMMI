@@ -14,7 +14,7 @@ unconstrained_actions <- read_delim(here("tests/test_files/unconstrained_actions
                                     col_types = "iiii")
 
 # Run unconstrained model
-results <- unconstrained(assets, asset_types, 2000,2020)
+results <- unconstrained(assets, asset_types, 2000, 2020)
 
 # Verify results
 if (!identical(as.tibble(results), as.tibble(unconstrained_actions))) {
