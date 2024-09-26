@@ -8,7 +8,7 @@ replace_by_age <- function(asset_details,
                            year) {
   "
   Parameters:
-    asset_details - The result of left joining asset_types onto assets by asset_type_id.
+    asset_details - The result of left joining asset_types abd asset_cations onto assets by asset_type_id.
       The year_built column should reflect any previous replacements made to assets by
       this model run.
     year - Current year
@@ -18,5 +18,5 @@ replace_by_age <- function(asset_details,
     or equal to the useful_life for its asset type.
   "
   asset_details %>% 
-    filter(year - year_built >= useful_life)
+    filter(year - year_built >= age_trigger)
 }

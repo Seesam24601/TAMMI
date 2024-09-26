@@ -130,11 +130,6 @@ test_asset_types <- function(asset_types) {
   # Assert asset_type_id is unique
   is_unique_col(asset_types$asset_type_id, "asset_types", "asset_type_id")
 
-  # Assert replacement_cost is integer-valued
-  is_integer_col(asset_types$replacement_cost, "asset_types", "replacement_cost")
-
-  # Assert useful_life is integer_valued
-  is_integer_col(asset_types$useful_life, "asset_types", "useful_life")
 }
 
 

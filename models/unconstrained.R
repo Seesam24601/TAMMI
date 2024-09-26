@@ -12,6 +12,7 @@ source(here("functions/cost_adjustment.R"))
 # ---- unconstrained ----
 unconstrained <- function(assets,
                           asset_types,
+                          asset_actions,
                           start_year,
                           end_year,
                           necessary_actions = replace_by_age,
@@ -20,6 +21,7 @@ unconstrained <- function(assets,
   Parameters:
     assets - see input_tables.md
     asset_types - see input_tables.md
+    asset_actions - see input_tables.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -42,17 +44,18 @@ unconstrained <- function(assets,
   # Assert that the assets dataframe meets its requirements
   test_assets(assets, asset_types, start_year)
 
-  # Left join asset_types on to assets
+  # Left join asset_types and asset_actions on to assets
   asset_details <- assets %>% 
-    merge(asset_types, by = "asset_type_id")
+    merge(asset_types, by = "asset_type_id") %>% 
+    merge(asset_actions, by = "asset_type_id")
 
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
-  replacements <- list()
+  actions <- list()
   for (year in start_year:end_year){
     
     # Get a list of replacements that need to be made in year
-    replacements[[year]] <- asset_details %>% 
+    actions[[year]] <- asset_details %>% 
 
       # Get the subset of assets that need to be replaced in year
       necessary_actions(year) %>% 
@@ -63,15 +66,15 @@ unconstrained <- function(assets,
       # Add the year of the replacement as a column
       mutate(year = year) %>% 
       
-      subset(select = c(year, asset_id, asset_type_id, replacement_cost))
+      subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
 
     # Update year_built for assets that have been replaced
     asset_details <- asset_details %>% 
-      mutate(year_built = ifelse(asset_id %in% replacements[[year]]$asset_id,
+      mutate(year_built = ifelse(asset_id %in% actions[[year]]$asset_id,
                                  year,
                                  year_built))
   }
 
   # Combine all years worth of replacements into a single dataframe
-  do.call(rbind, replacements)
+  do.call(rbind, actions)
 }

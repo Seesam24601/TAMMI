@@ -30,5 +30,5 @@ inflation <- function(asset_details,
   year_order(start_year, year)
 
   asset_details %>% 
-    mutate(replacement_cost = round(replacement_cost * (1 + inflation_rate)^(year - start_year), 2))
+    mutate(cost = round(cost * (1 + inflation_rate)^(year - start_year), 2))
 }
