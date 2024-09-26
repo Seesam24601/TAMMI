@@ -30,12 +30,7 @@ unconstrained <- function(assets,
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
 
   Returns:
-    A datframe that contains one record for every replacement action necessary to
-    maintain a state of good repair. This has the following fields:
-      > year: The year the replacement should be made
-      > asset_id: asset_id of the asset that will need replacement
-      > asset_type_id: asset_type_id of the asset that will need replacement
-      > replacement_cost: cost of the replacement
+    actions - see output_tables.md                       
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year
