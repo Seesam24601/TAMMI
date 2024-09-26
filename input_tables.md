@@ -3,7 +3,7 @@
 
 ## assets
 
-Table that contains 1 row for every asset. An asset is a single individual object, like bus #24000.
+This table contains 1 row for every asset. An asset is a single individual object, like bus #24000.
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
@@ -14,10 +14,21 @@ Table that contains 1 row for every asset. An asset is a single individual objec
 
 ## asset_types
 
-Table that contains 1 row for each type of asset. An asset type is a set of objects that all share the same replacement and rehab actions. For example, all 40 ft. buses would be expected to have the same rehab and replacement schedules.
+This table contains 1 row for each type of asset. An asset type is a set of objects that all share the same replacement and rehab actions. For example, all 40 ft. buses would be expected to have the same rehab and replacement schedules.
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
 | asset_type_id | PK | |
-| useful_life | | The age in years that the asset must be replacement. Must be an integer value |
-| replacement_cost | | The cost to replace the asset in US dollars. Must be an integer value. |
+
+
+## asset_actions
+
+This table contains 1 row for every action. An action is a capital cost associated with an asset type, such as rehabilitation or replacement.
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| asset_action_id | PK | |
+| asset_type_id | FK | The asset_type that this action applies to. Actions can only apply to a single asset_type. This keys into asset_type_id in the asset_types table. |
+| age_trigger | | Age at which, ideally, the action should be performed. The action may be scheduled after the asset reaches the age trigger in cases where there is limited budget. This must be integer-valued. |
+| cost | | The cost of the action. This must be integer-valued. |
+| replacement_flag | | 1 if the action is a replacement; 0 otherwise. Replacements differ from other actions in that replacements update the year_built field of the asset |

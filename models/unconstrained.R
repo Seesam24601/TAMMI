@@ -30,7 +30,7 @@ unconstrained <- function(assets,
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
 
   Returns:
-    actions - see output_tables.md                       
+    performed_actions - see output_tables.md                       
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year

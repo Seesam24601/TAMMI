@@ -1,9 +1,9 @@
 # Output Tables
 
 
-# actions
+# performed_actions
 
-Table that contains one record for every replacement action necessary to maintain a state of good repair. 
+This table contains one record for every replacement action necessary to maintain a state of good repair. 
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
