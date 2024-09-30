@@ -17,6 +17,10 @@ replace_by_age <- function(asset_details,
     Returns a subset of asset_details where the age of the asset in year is greater than 
     or equal to the useful_life for its asset type.
   "
+
+  # Assert asset_details has the age_trigger column
+  columns_in_df(asset_details, "age_trigger", "asset_actions")
+
   asset_details %>% 
     filter(year - year_built >= age_trigger)
 }
