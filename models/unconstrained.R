@@ -44,6 +44,9 @@ unconstrained <- function(assets,
   # Assert that the assets dataframe meets its requirements
   test_assets(assets, asset_types, start_year)
 
+  # Assert that asset_actions dataframe meets its requirements
+  test_asset_actions(asset_actions, asset_types)
+
   # Left join asset_types and asset_actions on to assets
   asset_details <- assets %>% 
     merge(asset_types, by = "asset_type_id") %>% 
