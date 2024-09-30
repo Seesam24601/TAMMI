@@ -97,6 +97,12 @@ test_assets <- function(assets, asset_types, start_year) {
     Nothing if assets meets its assumptions. Throws an appropriate error otherwise.
   "
 
+  # Assert required columns exist
+  error_message <- "assets table is missing one of the following required columns: asset_id, asset_type_id, year_built"
+  if (!all(c("asset_id", "asset_type_id", "year_built") %in% colnames(assets))) {
+    stop(error_message, call. = FALSE)
+  }
+
   # Assert asset_id is unique
   is_unique_col(assets$asset_id, "assets", "asset_id")
 
@@ -111,7 +117,7 @@ test_assets <- function(assets, asset_types, start_year) {
   is_integer_col(assets$year_built, "assets", "year_built")
 
   # Assert year_built < start_year
-  error_message <- paste("Not all values in year_built in assets are strictly less than start_year")
+  error_message <- "Not all values in year_built in assets are strictly less than start_year"
   if (!all(assets$year_built < start_year)) {
     stop(error_message, call. = FALSE)
   }
@@ -126,6 +132,12 @@ test_asset_types <- function(asset_types) {
   Returns:
     Nothing if asset_types meets its assumptions. Throws an appropriate error otherwise.
   "
+
+  # Assert asset_type_id column exists
+  error_message <- "asset_types table is missing one of the following required columns: asset_type_id"
+  if (!("asset_type_id" %in% colnames(asset_types))) {
+    stop(error_message, call. = FALSE)
+  }
 
   # Assert asset_type_id is unique
   is_unique_col(asset_types$asset_type_id, "asset_types", "asset_type_id")
