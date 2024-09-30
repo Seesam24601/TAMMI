@@ -1,6 +1,29 @@
 # This file contains functions to check the assumptions of various models
 
 
+columns_in_df <- function(df, col_names, df_name) {
+  "
+  Parameters:
+    df - Dataframe
+    col_names - Single column name as a string or vector thereof
+    df_name - Name of the dataframe as a string
+
+  Returns:
+    Nothing if col_names are all the name of columns in df. Otherwise, it throughs 
+    an error
+  "
+
+  # Convert columns vector to a human-readable string
+  columns_string <- paste(col_names, collapse = ", ")
+
+  error_message <- paste("The", df_name, "table is missing one of the following required columns:", columns_string)
+
+  if (!all(col_names %in% colnames(df))) {
+    stop(error_message, call. = FALSE)
+  }
+}
+
+
 is_integer <- function(x, variable_name) {
   "
   Parameters: 
@@ -115,10 +138,7 @@ test_asset_actions <- function(asset_actions, asset_types) {
   "
 
   # Assert required columns exist
-  error_message <- "The asset_actions table is missing one of the following required columns: asset_action_id, asset_type_id, cost, replacement_flag"
-  if (!all(c("asset_action_id", "asset_type_id", "cost", "replacement_flag") %in% colnames(asset_actions))) {
-    stop(error_message, call. = FALSE)
-  }
+  columns_in_df(asset_actions, c("asset_action_id", "asset_type_id", "cost", "replacement_flag"), "asset_actions") 
   
   # Assert asset_action_id is unique
   is_unique_col(asset_actions$asset_action_id, "asset_actions", "asset_actions_id")
@@ -151,10 +171,7 @@ test_assets <- function(assets, asset_types, start_year) {
   "
 
   # Assert required columns exist
-  error_message <- "The assets table is missing one of the following required columns: asset_id, asset_type_id, year_built"
-  if (!all(c("asset_id", "asset_type_id", "year_built") %in% colnames(assets))) {
-    stop(error_message, call. = FALSE)
-  }
+  columns_in_df(assets, c("asset_id", "asset_type_id", "year_built"), "assets") 
 
   # Assert asset_id is unique
   is_unique_col(assets$asset_id, "assets", "asset_id")
@@ -187,10 +204,7 @@ test_asset_types <- function(asset_types) {
   "
 
   # Assert asset_type_id column exists
-  error_message <- "The asset_types table is missing one of the following required columns: asset_type_id"
-  if (!("asset_type_id" %in% colnames(asset_types))) {
-    stop(error_message, call. = FALSE)
-  }
+  columns_in_df(asset_types, "asset_type_id", "asset_types") 
 
   # Assert asset_type_id is unique
   is_unique_col(asset_types$asset_type_id, "asset_types", "asset_type_id")
