@@ -30,7 +30,7 @@ This table contains 1 row for every action. An action is a capital cost associat
 | asset_action_id | PK | |
 | asset_type_id | FK | The asset_type that this action applies to. Actions can only apply to a single asset_type. This keys into asset_type_id in the asset_types table. |
 | cost | | The cost of the action. This must be integer-valued. |
-| replacement_flag | | 1 if the action is a replacement; 0 otherwise. Replacements differ from other actions in that replacements update the year_built field of the asset |
+| replacement_flag | | 1 if the action is a replacement; 0 otherwise. Replacements differ from other actions in that replacements update the year_built field of the asset. Once an asset is replaced, it can receive non-replacement actions that it has previously received again. |
 
 The following field is only reuqired when using the default neccesary actions function of `replace_by_age`:
 
