@@ -55,27 +55,28 @@ unconstrained <- function(assets,
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
-  for (year in start_year:end_year){
+  for (current_year in start_year:end_year){
+
+    # Get the subset of assets that need to be replaced in year
+    previous_actions <- do.call(rbind, actions)
     
     # Get a list of replacements that need to be made in year
-    actions[[year]] <- asset_details %>% 
-
-      # Get the subset of assets that need to be replaced in year
-      previous_actions <- do.call(rbind, actions)
-      necessary_actions(previous_actions, year) %>% 
+    actions[[current_year]] <- asset_details %>% 
+    
+      necessary_actions(previous_actions, current_year) %>% 
       
       # Apply cost adjustments
-      cost_adjustment(year, start_year) %>% 
+      cost_adjustment(current_year, start_year) %>% 
 
       # Add the year of the replacement as a column
-      mutate(year = year) %>% 
+      mutate(year = current_year) %>% 
       
       subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
 
     # Update year_built for assets that have been replaced
     asset_details <- asset_details %>% 
-      mutate(year_built = ifelse(asset_id %in% actions[[year]]$asset_id & replacement_flag,
-                                 year,
+      mutate(year_built = ifelse(asset_id %in% actions[[current_year]]$asset_id & replacement_flag,
+                                 current_year,
                                  year_built))
   }
 
