@@ -1,5 +1,5 @@
-# This file contains the unconstraine_run function
-# This file is tested by tests/unconstrained_test.R
+# This file contains the traditional_run function
+# This file is tested by tests/traditional_test.R
 
 library(tidyverse)
 library(here)
@@ -10,18 +10,20 @@ source(here("functions/cost_adjustment.R"))
 
 
 # ---- unconstrained_run ----
-unconstrained_run <- function(assets,
-                              asset_types,
-                              asset_actions,
-                              start_year,
-                              end_year,
-                              necessary_actions = replace_by_age,
-                              cost_adjustment = inflation) {
+traditional_run <- function(assets,
+                            asset_types,
+                            asset_actions,
+                            budget,
+                            start_year,
+                            end_year,
+                            necessary_actions = replace_by_age,
+                            cost_adjustment = inflation) {
   "
   Parameters:
     assets - see input_tables.md
     asset_types - see input_tables.md
     asset_actions - see input_tables.md
+    budget - see input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -32,8 +34,8 @@ unconstrained_run <- function(assets,
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
 
   Returns:
-    performed_actions - see output_tables.md
-  This run includes no constraints on the spending per year                       
+    performed_actions - see output_tables.md 
+  This run is constrained in the amount of spending per year by budget                      
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year
@@ -48,6 +50,9 @@ unconstrained_run <- function(assets,
   # Assert that asset_actions dataframe meets its requirements
   test_asset_actions(asset_actions, asset_types)
 
+  # Assert that budget dataframe meets its requirements
+  test_budget(budget, start_year, end_year)
+
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
@@ -60,6 +65,11 @@ unconstrained_run <- function(assets,
 
     # Get the subset of assets that need to be replaced in year
     previous_actions <- do.call(rbind, actions)
+
+    # Get budget for current_year
+    current_budget <- budget %>%
+      filter(year == current_year) %>% 
+      pull(budget)
     
     # Get a list of replacements that need to be made in year
     actions[[current_year]] <- asset_details %>% 
@@ -68,6 +78,10 @@ unconstrained_run <- function(assets,
       
       # Apply cost adjustments
       cost_adjustment(current_year, start_year) %>% 
+      
+      # Spend less than or equal to the budget for a given year
+      mutate(total_cost = cumsum(cost)) %>% 
+      filter(total_cost <= current_budget) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
