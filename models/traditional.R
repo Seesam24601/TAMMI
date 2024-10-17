@@ -65,6 +65,11 @@ traditional_run <- function(assets,
 
     # Get the subset of assets that need to be replaced in year
     previous_actions <- do.call(rbind, actions)
+
+    # Get budget for current_year
+    current_budget <- budget %>%
+      filter(year == current_year) %>% 
+      pull(budget)
     
     # Get a list of replacements that need to be made in year
     actions[[current_year]] <- asset_details %>% 
@@ -73,6 +78,10 @@ traditional_run <- function(assets,
       
       # Apply cost adjustments
       cost_adjustment(current_year, start_year) %>% 
+      
+      # Spend less than or equal to the budget for a given year
+      mutate(total_cost = cumsum(cost)) %>% 
+      filter(total_cost <= current_budget) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
