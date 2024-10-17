@@ -72,10 +72,6 @@ unconstrained <- function(assets,
       mutate(year = current_year) %>% 
       
       subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
-    
-    print(current_year)
-    print(asset_details)
-    print(" ")
 
     # Get the subset of actions for the current year that are replacements
     replacements <- actions[[current_year]] %>% 
