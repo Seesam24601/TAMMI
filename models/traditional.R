@@ -1,5 +1,5 @@
-# This file contains the unconstraine_run function
-# This file is tested by tests/unconstrained_test.R
+# This file contains the traditional_run function
+# This file is tested by tests/traditional_test.R
 
 library(tidyverse)
 library(here)
@@ -10,18 +10,20 @@ source(here("functions/cost_adjustment.R"))
 
 
 # ---- unconstrained_run ----
-unconstrained_run <- function(assets,
-                              asset_types,
-                              asset_actions,
-                              start_year,
-                              end_year,
-                              necessary_actions = replace_by_age,
-                              cost_adjustment = inflation) {
+traditional_run <- function(assets,
+                            asset_types,
+                            asset_actions,
+                            budget,
+                            start_year,
+                            end_year,
+                            necessary_actions = replace_by_age,
+                            cost_adjustment = inflation) {
   "
   Parameters:
     assets - see input_tables.md
     asset_types - see input_tables.md
     asset_actions - see input_tables.md
+    budget - see input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -32,8 +34,8 @@ unconstrained_run <- function(assets,
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
 
   Returns:
-    performed_actions - see output_tables.md
-  This run includes no constraints on the spending per year                       
+    performed_actions - see output_tables.md 
+  This run is constrained in the amount of spending per year by budget                      
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year
