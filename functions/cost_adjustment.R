@@ -6,7 +6,7 @@
 
 
 inflation <- function(asset_details,
-                      year,
+                      current_year,
                       start_year,
                       inflation_rate = 0.03) {
   "
@@ -14,7 +14,7 @@ inflation <- function(asset_details,
     asset_details - The result of left joining asset_types onto assets by asset_type_id.
       The year_built column should reflect any previous replacements made to assets by
       this model run.
-    year - Current year. Must be greated than start_year
+    current_year - Current year. Must be greated than start_year
     start_year - Year the model started on. This is considered the base year for
       inflation calculations. All costs should be listed in dollars for that year
     inflation_rate - 0.03 by default
@@ -27,8 +27,8 @@ inflation <- function(asset_details,
   "
 
   # Assert that start_year and year are both integer-valued and that year >= start_year
-  year_order(start_year, year)
+  year_order(start_year, current_year)
 
   asset_details %>% 
-    mutate(replacement_cost = round(replacement_cost * (1 + inflation_rate)^(year - start_year), 2))
+    mutate(cost = round(cost * (1 + inflation_rate)^(current_year - start_year), 2))
 }

@@ -1,6 +1,29 @@
 # This file contains functions to check the assumptions of various models
 
 
+columns_in_df <- function(df, col_names, df_name) {
+  "
+  Parameters:
+    df - Dataframe
+    col_names - Single column name as a string or vector thereof
+    df_name - Name of the dataframe as a string
+
+  Returns:
+    Nothing if col_names are all the name of columns in df. Otherwise, it throughs 
+    an error
+  "
+
+  # Convert columns vector to a human-readable string
+  columns_string <- paste(col_names, collapse = ", ")
+
+  error_message <- paste("The", df_name, "table is missing one of the following required columns:", columns_string)
+
+  if (!all(col_names %in% colnames(df))) {
+    stop(error_message, call. = FALSE)
+  }
+}
+
+
 is_integer <- function(x, variable_name) {
   "
   Parameters: 
@@ -46,6 +69,45 @@ is_integer_col <- function(col, df_name, col_name) {
 }
 
 
+is_flag_col <- function(col, df_name, col_name) {
+  "
+  Parameters: 
+    col - Vector to be tested on
+    df_name - Name of the dataframe to be used in the error message
+    col_name - Name of the column to be used in the error mesage
+
+  Returns:
+    Nothing if every element of col is either 0 or 1. Otherwise, it throws an error.
+  "
+  error_message <- paste("The", col_name, "field in", df_name, "contains a value other than 0 or 1")
+  
+  if (!identical(unique(col), c(0L, 1L)) &
+      !identical(unique(col), c(1L, 0L)) &
+      !identical(unique(col), 0L)  & 
+      !identical(unique(col), 1L) ) {
+    stop(error_message, call. = FALSE)
+  }
+}
+
+
+is_unique_col <- function(col, df_name, col_name) {
+  "
+  Parameters: 
+    col - Vector to be tested on
+    df_name - Name of the dataframe to be used in the error message
+    col_name - Name of the column to be used in the error mesage
+
+  Returns:
+    Nothing if every element of col is unique. Throws an error otherwise.
+  "
+  error_message <- paste("The", col_name, "field in", df_name, "must be unique")
+  
+  if(length(col) != length(unique(col))){
+    stop(error_message, call. = FALSE)
+  }
+}
+
+
 key_exists <- function(keys, valid_keys, df1_name, df2_name, col_name) {
   "
   Parameters:
@@ -68,21 +130,35 @@ key_exists <- function(keys, valid_keys, df1_name, df2_name, col_name) {
 }
 
 
-is_unique_col <- function(col, df_name, col_name) {
+test_asset_actions <- function(asset_actions, asset_types) {
   "
-  Parameters: 
-    col - Vector to be tested on
-    df_name - Name of the dataframe to be used in the error message
-    col_name - Name of the column to be used in the error mesage
+  Parameters:
+    asset_actions 
+    asset_types (passed preflight)
 
   Returns:
-    Nothing if every element of col is unique. Throws an error otherwise.
+    Nothing if assets meets its assumptions. Throws an appropriate error otherwise.
   "
-  error_message <- paste("The", col_name, "field in", df_name, "must be unique")
+
+  # Assert required columns exist
+  columns_in_df(asset_actions, c("asset_action_id", "asset_type_id", "cost", "replacement_flag"), "asset_actions") 
   
-  if(length(col) != length(unique(col))){
-    stop(error_message, call. = FALSE)
-  }
+  # Assert asset_action_id is unique
+  is_unique_col(asset_actions$asset_action_id, "asset_actions", "asset_actions_id")
+
+  # Assert asset_type_id is in asset_types
+  key_exists(asset_actions$asset_type_id, 
+    asset_types$asset_type_id,
+    "asset_actions",
+    "asset_types",
+    "asset_type_id")
+  
+  # Assert cost is integer-valued
+  is_integer_col(asset_actions$cost, "asset_actions", "cost")
+
+  # Assert replacement_flag is a flag
+  is_flag_col(asset_actions$replacement_flag, "asset_actions", "replacement_flag")
+
 }
 
 
@@ -90,12 +166,15 @@ test_assets <- function(assets, asset_types, start_year) {
   "
   Parameters:
     assets 
-    asset_types
-    start_year
+    asset_types (passed preflight)
+    start_year (passed preflight)
 
   Returns:
     Nothing if assets meets its assumptions. Throws an appropriate error otherwise.
   "
+
+  # Assert required columns exist
+  columns_in_df(assets, c("asset_id", "asset_type_id", "year_built"), "assets") 
 
   # Assert asset_id is unique
   is_unique_col(assets$asset_id, "assets", "asset_id")
@@ -111,7 +190,7 @@ test_assets <- function(assets, asset_types, start_year) {
   is_integer_col(assets$year_built, "assets", "year_built")
 
   # Assert year_built < start_year
-  error_message <- paste("Not all values in year_built in assets are strictly less than start_year")
+  error_message <- "Not all values in year_built in assets are strictly less than start_year"
   if (!all(assets$year_built < start_year)) {
     stop(error_message, call. = FALSE)
   }
@@ -127,14 +206,12 @@ test_asset_types <- function(asset_types) {
     Nothing if asset_types meets its assumptions. Throws an appropriate error otherwise.
   "
 
+  # Assert asset_type_id column exists
+  columns_in_df(asset_types, "asset_type_id", "asset_types") 
+
   # Assert asset_type_id is unique
   is_unique_col(asset_types$asset_type_id, "asset_types", "asset_type_id")
 
-  # Assert replacement_cost is integer-valued
-  is_integer_col(asset_types$replacement_cost, "asset_types", "replacement_cost")
-
-  # Assert useful_life is integer_valued
-  is_integer_col(asset_types$useful_life, "asset_types", "useful_life")
 }
 
 
