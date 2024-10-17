@@ -1,4 +1,4 @@
 asset_action_id,asset_type_id,age_trigger,cost,replacement_flag
 0,0,10,2000,1
-1,1,5,5000,1
-2,1,10,100,0
+1,1,7,5000,1
+2,1,5,100,0
