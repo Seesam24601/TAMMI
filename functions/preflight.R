@@ -215,6 +215,38 @@ test_asset_types <- function(asset_types) {
 }
 
 
+test_budget <- function(budget, start_year, end_year) {
+  "
+  Parameters:
+    budget
+    start_year (passed preflight)
+    end_year (passed preflight)
+
+  Returns:
+    Nothing if budget meets its assumptions. Throws an appropriate error otherwise.
+  "
+
+  # Assert year column exists
+  columns_in_df(budget, "year", "budget") 
+
+  # Assert year column is unique
+  is_unique_col(budget$year, "bduget", "year")
+
+  # Assert budget column exists
+  columns_in_df(budget, "budget", "budget")
+
+  # Assert there is a year value for every year between, and including, start_year and end_year
+  for (current_year in start_year:end_year){
+
+    if (!(current_year %in% budget$year)) {
+      error_message <- paste("The budget table is missing a year between start_year and end_year:", current_year)
+      stop(error_message, call. = FALSE)
+    }
+
+  }
+}
+
+
 year_order <- function(start_year, end_year) {
   "
   Parameters:
