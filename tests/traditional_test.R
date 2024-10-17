@@ -16,8 +16,16 @@ asset_actions <- read_delim(here("tests/test_files/asset_actions.csv"),
                             col_types = "iiiii",
                             delim = ",")
 budget <- read_delim(here("tests/test_files/budget.csv"),
-                          col_types = "ii",
-                          delim = ",")
+                     col_types = "ii",
+                     delim = ",")
+traditional_actions <- read_delim(here("tests/test_files/traditional_actions.csv"),
+                                  col_types = "iiiid",
+                                  delim = ",")
 
 # Run traditional model
 results <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2020)
+
+# Verify results
+if (!identical(as_tibble(results), as_tibble(traditional_actions))) {
+  stop("Traditional model is not functioning as intended")
+}
