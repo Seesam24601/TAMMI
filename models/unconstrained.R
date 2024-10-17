@@ -47,15 +47,15 @@ unconstrained <- function(assets,
   # Assert that asset_actions dataframe meets its requirements
   test_asset_actions(asset_actions, asset_types)
 
-  # Left join asset_types and asset_actions on to assets
-  asset_details <- assets %>% 
-    merge(asset_types, by = "asset_type_id") %>% 
-    merge(asset_actions, by = "asset_type_id")
-
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
   for (current_year in start_year:end_year){
+
+    # Left join asset_types and asset_actions on to assets
+    asset_details <- assets %>% 
+      merge(asset_types, by = "asset_type_id") %>% 
+      merge(asset_actions, by = "asset_type_id")
 
     # Get the subset of assets that need to be replaced in year
     previous_actions <- do.call(rbind, actions)
@@ -72,10 +72,19 @@ unconstrained <- function(assets,
       mutate(year = current_year) %>% 
       
       subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
+    
+    print(current_year)
+    print(asset_details)
+    print(" ")
+
+    # Get the subset of actions for the current year that are replacements
+    replacements <- actions[[current_year]] %>% 
+      left_join(asset_actions, by = "asset_action_id") %>% 
+      filter(replacement_flag == 1)
 
     # Update year_built for assets that have been replaced
-    asset_details <- asset_details %>% 
-      mutate(year_built = ifelse(asset_id %in% actions[[current_year]]$asset_id & replacement_flag,
+    assets <- assets %>% 
+      mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
                                  current_year,
                                  year_built))
   }
