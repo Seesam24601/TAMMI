@@ -7,9 +7,19 @@ library(here)
 source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
+source(here("functions/budget"))
 
 
-# ---- unconstrained_run ----
+# ---- budget -----
+budget <- function(asset_details,
+                   skip_large) {
+  "
+  "
+  
+}
+
+
+# ---- traditional_run ----
 traditional_run <- function(assets,
                             asset_types,
                             asset_actions,
@@ -17,7 +27,8 @@ traditional_run <- function(assets,
                             start_year,
                             end_year,
                             necessary_actions = replace_by_age,
-                            cost_adjustment = inflation) {
+                            cost_adjustment = inflation,
+                            skip_large = TRUE) {
   "
   Parameters:
     assets - see input_tables.md
@@ -32,6 +43,11 @@ traditional_run <- function(assets,
       functions/necessary_actions.R. replace_by_age by default.
     cost_adjustment - A function that meets the requirements laid out in
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
+    skip_large - A boolean value. If skip_large is true, then in the case where skipping an
+      expensive action in the prioritized list of necessary actions reveals a cheaper action
+      that is still within budget, the algorithm will choose this approach. This should
+      not be used when carryover is also TRUE. Note that setting skip_large to TRUE may
+      be less efficient only larger datasets.
 
   Returns:
     performed_actions - see output_tables.md 
