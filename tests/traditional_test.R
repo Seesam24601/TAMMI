@@ -23,7 +23,7 @@ traditional_actions <- read_delim(here("tests/test_files/traditional_actions.csv
                                   delim = ",")
 
 # Run traditional model
-results <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2020)
+results <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2020, skip_large = FALSE)
 
 # Verify results
 if (!identical(as_tibble(results), as_tibble(traditional_actions))) {
