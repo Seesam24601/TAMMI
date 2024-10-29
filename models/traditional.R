@@ -32,8 +32,15 @@ apply_budget <- function(necessary_actions,
     necessary_actions %>% 
 
       # Spend less than or equal to the budget for a given year
-      mutate(total_cost = accumulate(cost, ~ .x + .y, .init = 0)) %>% 
-      filter(total_cost <= current_budget)  
+      # In the case that adding the current cost would cause the total_cost to be over the budget, skip
+      # that record and return the total_cost for the previous record
+      mutate(total_cost = accumulate(cost, ~ if (.x + .y <= current_budget) .x + .y else .x, .init = 0)[-1]) %>% 
+      
+      # Remove records who have the same total_cost as the previous record, since this means that 
+      # adding that record would have exceeded the budget
+      # The replace_na is used to not drop the first row since lag(total_cost) would be NA for that record
+      # There should be no other NAs that are replaced here
+      filter(total_cost != replace_na(lag(total_cost), 0))  
 
   }
 
