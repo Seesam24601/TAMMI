@@ -29,7 +29,11 @@ apply_budget <- function(necessary_actions,
   # If skip_large is TRUE, a for loop is required
   # This may result in worse peformance on large datasets
   if (skip_large) {
-  necessary_actions
+    necessary_actions %>% 
+
+      # Spend less than or equal to the budget for a given year
+      mutate(total_cost = accumulate(cost, ~ .x + .y, .init = 0)) %>% 
+      filter(total_cost <= current_budget)  
 
   }
 
@@ -37,7 +41,7 @@ apply_budget <- function(necessary_actions,
   else {
     necessary_actions %>% 
 
-    # Spend less than or equal to the budget for a given year
+      # Spend less than or equal to the budget for a given year
       mutate(total_cost = cumsum(cost)) %>% 
       filter(total_cost <= current_budget)  
 
