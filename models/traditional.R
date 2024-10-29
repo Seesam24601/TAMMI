@@ -7,15 +7,30 @@ library(here)
 source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
-source(here("functions/budget"))
 
 
-# ---- budget -----
-budget <- function(asset_details,
-                   skip_large) {
+# ---- apply_budget -----
+apply_budget <- function(necessary_actions,
+                         current_budget,
+                         skip_large) {
   "
+  Parameters:
+    necessary_actions - result of joining assets, asset_types, and asset_actions (also known
+      as asset_details) that has been subsetted to the necessary actions, had cost adjustments
+      applied, and prioritized
+    current_budget - value of the budget for the current year; this should be integer-valued
+    skip_large - see traditional_run documentation
+
+  Returns:
+    The subset of necessary_actions that can be paid for given the current budget as constrained
+  by the additional settings like skip_large and carryover
   "
-  
+
+  necessary_actions %>% 
+
+  # Spend less than or equal to the budget for a given year
+    mutate(total_cost = cumsum(cost)) %>% 
+    filter(total_cost <= current_budget)                
 }
 
 
@@ -95,9 +110,8 @@ traditional_run <- function(assets,
       # Apply cost adjustments
       cost_adjustment(current_year, start_year) %>% 
       
-      # Spend less than or equal to the budget for a given year
-      mutate(total_cost = cumsum(cost)) %>% 
-      filter(total_cost <= current_budget) %>% 
+      # Apply budget
+      apply_budget(current_budget, skip_large) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
