@@ -28,8 +28,8 @@ traditional_actions_two <- read_delim(here("tests/test_files/traditional_actions
                                       delim = ",")
 
 # Run traditional model
-results_one <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = TRUE)
-results_two <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = FALSE)
+results_one <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = TRUE, carryover = FALSE)
+results_two <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = FALSE, carryover = FALSE)
 
 # Verify results
 if (!identical(as_tibble(results_one), as_tibble(traditional_actions_one))) {

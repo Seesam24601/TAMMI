@@ -148,6 +148,19 @@ traditional_run <- function(assets,
       mutate(year = current_year) %>% 
       
       subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
+    
+    # Carry over left over budget if carryover is TRUE
+    if (carryover) {
+
+      # Calculate the amount of left over budget
+      left_over_budget <- current_budget - actions[[current_year]] %>% 
+        summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
+        pull(total_cost)
+
+      # Update the budget for the next year with the leftovers
+      budget <- budget %>% 
+        mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
+    }
 
     # Get the subset of actions for the current year that are replacements
     replacements <- actions[[current_year]] %>% 
