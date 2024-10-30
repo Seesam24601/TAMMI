@@ -65,7 +65,8 @@ traditional_run <- function(assets,
                             end_year,
                             necessary_actions = replace_by_age,
                             cost_adjustment = inflation,
-                            skip_large = TRUE) {
+                            skip_large = FALSE,
+                            carryover = TRUE) {
   "
   Parameters:
     assets - see input_tables.md
@@ -85,6 +86,8 @@ traditional_run <- function(assets,
       that is still within budget, the algorithm will choose this approach. This should
       not be used when carryover is also TRUE. Note that setting skip_large to TRUE may
       be less efficient only larger datasets.
+    carryover - A boolean value. If true, then unused money in the budget for after year X
+      will be added to the budget for year X + 1. This should not be used when skip_large is TRUE
 
   Returns:
     performed_actions - see output_tables.md 
