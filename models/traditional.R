@@ -109,6 +109,12 @@ traditional_run <- function(assets,
   # Assert that budget dataframe meets its requirements
   test_budget(budget, start_year, end_year)
 
+  # Warn users if both skip_large and carryover are set to TRUE
+  warning_message <- "Both skip_large and carryover are set to TRUE"
+  if (skip_large & carryover) {
+    warning(warning_message, call. = FALSE)
+  }
+
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
