@@ -9,7 +9,54 @@ source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
 
 
-# ---- unconstrained_run ----
+# ---- apply_budget -----
+apply_budget <- function(necessary_actions,
+                         current_budget,
+                         skip_large) {
+  "
+  Parameters:
+    necessary_actions - result of joining assets, asset_types, and asset_actions (also known
+      as asset_details) that has been subsetted to the necessary actions, had cost adjustments
+      applied, and prioritized
+    current_budget - value of the budget for the current year; this should be integer-valued
+    skip_large - see traditional_run documentation
+
+  Returns:
+    The subset of necessary_actions that can be paid for given the current budget as constrained
+  by the additional settings like skip_large and carryover
+  "
+
+  # If skip_large is TRUE, a for loop is required
+  # This may result in worse peformance on large datasets
+  if (skip_large) {
+    necessary_actions %>% 
+
+      # Spend less than or equal to the budget for a given year
+      # In the case that adding the current cost would cause the total_cost to be over the budget, skip
+      # that record and return the total_cost for the previous record
+      mutate(total_cost = accumulate(cost, ~ if (.x + .y <= current_budget) .x + .y else .x, .init = 0)[-1]) %>% 
+      
+      # Remove records who have the same total_cost as the previous record, since this means that 
+      # adding that record would have exceeded the budget
+      # The replace_na is used to not drop the first row since lag(total_cost) would be NA for that record
+      # There should be no other NAs that are replaced here
+      filter(total_cost != replace_na(lag(total_cost), 0))  
+
+  }
+
+  # If skip_large is FALSE, use cumsum for better optimization
+  else {
+    necessary_actions %>% 
+
+      # Spend less than or equal to the budget for a given year
+      mutate(total_cost = cumsum(cost)) %>% 
+      filter(total_cost <= current_budget)  
+
+  }          
+}
+
+
+# ---- traditional_run ----
 traditional_run <- function(assets,
                             asset_types,
                             asset_actions,
@@ -17,7 +64,8 @@ traditional_run <- function(assets,
                             start_year,
                             end_year,
                             necessary_actions = replace_by_age,
-                            cost_adjustment = inflation) {
+                            cost_adjustment = inflation,
+                            skip_large = TRUE) {
   "
   Parameters:
     assets - see input_tables.md
@@ -32,6 +80,11 @@ traditional_run <- function(assets,
       functions/necessary_actions.R. replace_by_age by default.
     cost_adjustment - A function that meets the requirements laid out in
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
+    skip_large - A boolean value. If skip_large is true, then in the case where skipping an
+      expensive action in the prioritized list of necessary actions reveals a cheaper action
+      that is still within budget, the algorithm will choose this approach. This should
+      not be used when carryover is also TRUE. Note that setting skip_large to TRUE may
+      be less efficient only larger datasets.
 
   Returns:
     performed_actions - see output_tables.md 
@@ -79,9 +132,8 @@ traditional_run <- function(assets,
       # Apply cost adjustments
       cost_adjustment(current_year, start_year) %>% 
       
-      # Spend less than or equal to the budget for a given year
-      mutate(total_cost = cumsum(cost)) %>% 
-      filter(total_cost <= current_budget) %>% 
+      # Apply budget
+      apply_budget(current_budget, skip_large) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
