@@ -65,7 +65,8 @@ traditional_run <- function(assets,
                             end_year,
                             necessary_actions = replace_by_age,
                             cost_adjustment = inflation,
-                            skip_large = TRUE) {
+                            skip_large = FALSE,
+                            carryover = TRUE) {
   "
   Parameters:
     assets - see input_tables.md
@@ -85,6 +86,8 @@ traditional_run <- function(assets,
       that is still within budget, the algorithm will choose this approach. This should
       not be used when carryover is also TRUE. Note that setting skip_large to TRUE may
       be less efficient only larger datasets.
+    carryover - A boolean value. If true, then unused money in the budget for after year X
+      will be added to the budget for year X + 1. This should not be used when skip_large is TRUE
 
   Returns:
     performed_actions - see output_tables.md 
@@ -105,6 +108,12 @@ traditional_run <- function(assets,
 
   # Assert that budget dataframe meets its requirements
   test_budget(budget, start_year, end_year)
+
+  # Warn users if both skip_large and carryover are set to TRUE
+  warning_message <- "Both skip_large and carryover are set to TRUE"
+  if (skip_large & carryover) {
+    warning(warning_message, call. = FALSE)
+  }
 
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
@@ -139,6 +148,19 @@ traditional_run <- function(assets,
       mutate(year = current_year) %>% 
       
       subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
+    
+    # Carry over left over budget if carryover is TRUE
+    if (carryover) {
+
+      # Calculate the amount of left over budget
+      left_over_budget <- current_budget - actions[[current_year]] %>% 
+        summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
+        pull(total_cost)
+
+      # Update the budget for the next year with the leftovers
+      budget <- budget %>% 
+        mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
+    }
 
     # Get the subset of actions for the current year that are replacements
     replacements <- actions[[current_year]] %>% 

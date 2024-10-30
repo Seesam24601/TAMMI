@@ -26,15 +26,22 @@ traditional_actions_one <- read_delim(here("tests/test_files/traditional_actions
 traditional_actions_two <- read_delim(here("tests/test_files/traditional_actions_two.csv"),
                                       col_types = "iiiid",
                                       delim = ",")
+traditional_actions_three <- read_delim(here("tests/test_files/traditional_actions_three.csv"),
+                                      col_types = "iiiid",
+                                      delim = ",")
 
 # Run traditional model
-results_one <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = TRUE)
-results_two <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = FALSE)
+results_one <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = TRUE, carryover = FALSE)
+results_two <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = FALSE, carryover = FALSE)
+results_three <- traditional_run(assets, asset_types, asset_actions, budget, 2000, 2022, skip_large = FALSE, carryover = TRUE)
 
 # Verify results
 if (!identical(as_tibble(results_one), as_tibble(traditional_actions_one))) {
   stop("Traditional model is not functioning as intended: test 1")
 }
-if (!identical(as_tibble(results_one), as_tibble(traditional_actions_one))) {
+if (!identical(as_tibble(results_two), as_tibble(traditional_actions_two))) {
   stop("Traditional model is not functioning as intended: test 2")
+}
+if (!identical(as_tibble(results_three), as_tibble(traditional_actions_three))) {
+  stop("Traditional model is not functioning as intended: test 3")
 }
