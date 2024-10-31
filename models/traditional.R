@@ -7,6 +7,7 @@ library(here)
 source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
+source(here("functions/priorities.R"))
 
 
 # ---- apply_budget -----
@@ -65,6 +66,7 @@ traditional_run <- function(assets,
                             end_year,
                             necessary_actions = replace_by_age,
                             cost_adjustment = inflation,
+                            priorities = prioritize_longest_wait,
                             skip_large = FALSE,
                             carryover = TRUE) {
   "
@@ -81,6 +83,8 @@ traditional_run <- function(assets,
       functions/necessary_actions.R. replace_by_age by default.
     cost_adjustment - A function that meets the requirements laid out in
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
+    priorities - A function that meets the requirements laid out in functions/priorities.R
+      prioritize_longest_wait by default
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
       expensive action in the prioritized list of necessary actions reveals a cheaper action
       that is still within budget, the algorithm will choose this approach. This should
@@ -140,6 +144,9 @@ traditional_run <- function(assets,
       
       # Apply cost adjustments
       cost_adjustment(current_year, start_year) %>% 
+      
+      # Order based on priorities
+      priorities(current_year) %>% 
       
       # Apply budget
       apply_budget(current_budget, skip_large) %>% 
