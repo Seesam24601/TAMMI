@@ -15,12 +15,18 @@ prioritize_longest_wait <- function(necessary_actions,
 
   Returns:
     Rearrange necessary_actions so that it is ordered by longest time the action has been
-    necessary. This is calculated by taking age_triger - (current_year - year_built)
+    necessary. This is calculated by taking (current_year - year_built) - age_trigger
   "
 
   # Assert asset_details has the age_trigger column
   columns_in_df(necessary_actions, "age_trigger", "asset_actions")
 
-  necessary_actions
+  # Order by wait from longest to shortest
+  necessary_actions %>% 
+    mutate(wait = (current_year - year_built) - age_trigger) %>% 
+    arrange(desc(wait)) %>% 
+
+    # Remove extra column
+    subset(select = -wait)
 
 }
