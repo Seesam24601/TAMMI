@@ -30,7 +30,7 @@ annual_adjustment_wrapper <- function(supplied_function,
   
   # Assert that the number of rows of the assets table hasn't changed
   error_message <- paste("The number of rows of the assets table was changed by the function supplied for annual adjustment")
-  if (rows != nrow(assets)) {
+  if (rows != nrow(result)) {
     stop(error_message, call. = FALSE)
   }
 

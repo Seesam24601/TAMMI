@@ -147,7 +147,7 @@ traditional_run <- function(assets,
       necessary_actions(previous_actions, current_year) %>% 
       
       # Apply cost adjustments
-      cost_adjustment(current_year, start_year) %>% 
+      cost_adjustment_wrapper(cost_adjustment, ., current_year, start_year) %>% 
       
       # Order based on priorities
       priorities(current_year) %>% 

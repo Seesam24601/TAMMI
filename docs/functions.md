@@ -48,6 +48,7 @@ This function updates the cost of an action. Typically, this involves making adj
 1. The number of rows of the `asset_details` table cannot change
 2. The fields of the `asset_details` table cannot change
 3. The values of fields other than `cost` cannot be change
+4. The `cost` field must still be integer-valued
 
 ### Defaults
 
