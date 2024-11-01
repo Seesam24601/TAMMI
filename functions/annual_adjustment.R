@@ -1,8 +1,45 @@
 # This file contains default options for the annual_adjustment function type.
-# These functions have access to every column in assets, asset_types, and asset_actions tables, the
-# current_year, and the performed_actions for the current_uear
-# They provide annual updates to the assets so that things like year_built can be update with replacements
-# Note that only fields in the assets table should be altered
+
+
+annual_adjustment_wrapper <- function(supplied_function,
+                                      assets,
+                                      asset_types,
+                                      asset_actions,
+                                      performed_actions,
+                                      current_year) {
+  "
+  Enforces the requirements for the annual adjustment function type as laid out in docs/function.md
+  "
+
+  # Collect the number of rows of the assets table
+  rows <- nrow(assets)
+
+  # Collect the columns of the assets table
+  columns <- colnames(assets)
+
+  # Run function
+  result <- supplied_function(assets,
+                              asset_types,
+                              asset_actions,
+                              performed_actions,
+                              current_year)
+  
+  # Assert that the results meets the assets table requirements
+  # year_built must be less than or equal to current_year
+  test_assets(result, asset_types, current_year + 1)
+  
+  # Assert that the number of rows of the assets table hasn't changed
+  error_message <- paste("The number of rows of the assets table was changed by the function supplied for annual adjustment")
+  if (rows != nrow(assets)) {
+    stop(error_message, call. = FALSE)
+  }
+
+  # Assert that the columns of the assets table hasn't changed
+  columns_in_df(result, columns, "assets")
+
+  # Return result
+  result
+}
 
 
 replace_assets <- function(assets,
@@ -11,16 +48,7 @@ replace_assets <- function(assets,
                            performed_actions,
                            current_year) {
   "
-  Parameters:
-    assets - See input_tables.md
-    asset_types - See input_tables.md
-    asset_actions - See input_tables.md
-    performed_actions - Tibble with the subset of asset_details that will be performed in the current_year
-    current_year - Integer-valued current year
-  
-  Returns:
-    The assets table with the year_built column replaced for every asset with an action in performed_actions 
-    where replacement_flag is 1
+  See docs/functions.md
   "
 
   # Get the subset of actions for the current year that are replacements

@@ -21,6 +21,8 @@ The `assets` table
 
 1. The number of rows of the `assets` table cannot change
 2. The fields of the `assets` table cannot change
+3. The `year_built` field must be less than or equal to `current_year`
+4. The `assets` table must still pass the requirements set out in docs/input_tables.md, except for `year_built` may be greater than `start_year` so long as it is less than or equal to `current_year`.
 
 ### Default
 
