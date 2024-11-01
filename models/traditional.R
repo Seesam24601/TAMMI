@@ -68,7 +68,7 @@ traditional_run <- function(assets,
                             necessary_actions = replace_by_age,
                             cost_adjustment = inflation,
                             priorities = prioritize_longest_wait,
-                            annual_adjustments = replace_assets,
+                            annual_adjustment = replace_assets,
                             skip_large = FALSE,
                             carryover = TRUE) {
   "
@@ -173,16 +173,9 @@ traditional_run <- function(assets,
         mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
     }
 
-    # Get the subset of actions for the current year that are replacements
-    replacements <- actions[[current_year]] %>% 
-      left_join(asset_actions, by = "asset_action_id") %>% 
-      filter(replacement_flag == 1)
+    # Perform annual adjustments
+    assets <- annual_adjustment(assets, asset_types, asset_actions, actions[[current_year]], current_year)
 
-    # Update year_built for assets that have been replaced
-    assets <- assets %>% 
-      mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
-                                 current_year,
-                                 year_built))
   }
 
   # Combine all years worth of replacements into a single dataframe

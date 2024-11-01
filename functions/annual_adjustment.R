@@ -22,5 +22,15 @@ replace_assets <- function(assets,
     The assets table with the year_built column replaced for every asset with an action in performed_actions 
     where replacement_flag is 1
   "
-  
+
+  # Get the subset of actions for the current year that are replacements
+  replacements <- performed_actions %>% 
+    left_join(asset_actions, by = "asset_action_id") %>% 
+    filter(replacement_flag == 1)
+
+  # Update year_built for assets that have been replaced
+  assets %>% 
+    mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
+                                current_year,
+                                year_built))
 }

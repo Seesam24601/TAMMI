@@ -78,16 +78,8 @@ unconstrained_run <- function(assets,
       
       subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
 
-    # Get the subset of actions for the current year that are replacements
-    replacements <- actions[[current_year]] %>% 
-      left_join(asset_actions, by = "asset_action_id") %>% 
-      filter(replacement_flag == 1)
-
-    # Update year_built for assets that have been replaced
-    assets <- assets %>% 
-      mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
-                                 current_year,
-                                 year_built))
+    # Perform annual adjustments
+    assets <- annual_adjustment(assets, asset_types, asset_actions, actions[[current_year]], current_year)
   }
 
   # Combine all years worth of replacements into a single dataframe
