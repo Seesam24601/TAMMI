@@ -31,8 +31,32 @@ By default, this the `replace_assets` function. This returns the `assets` table 
 
 ## Cost Adjustment
 
+This function updates the cost of an action. Typically, this involves making adjustments to the `cost` field from the `asset_actions` input table to take into account things like inflation or agency soft costs. In the traditional model, this is completed before the necessary actions are prioritized.
+
+### Inputs
+
+- `asset_details` table
+- `current_year`: The current year as an integer value
+- `start_year`: The current year as an integer value
+
+### Outputs
+
+- `asset_details` table
+
+### Requirements
+
+1. The number of rows of the `asset_details` table cannot change
+2. The fields of the `asset_details` table cannot change
+3. The values of fields other than `cost` cannot be change
+
+### Defaults
+
+By default this is the `inflation` function. This updates the `cost` column  to reflect the inflation that is expected to occur between `current_year` and `start_year`. Inflation is calculated as occuring at `inflation_rate` starting at `start_year` and compounding annually. The results are rounded to two decimal places. This has the optional input parameter of `inflation_rate`. By default `inflation_rate` is 0.3.
+
 
 ## Necessary Actions
 
 
 ## Priorities
+
+This occurs after the cost adjustment function has been applied.
