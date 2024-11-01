@@ -8,6 +8,7 @@ source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
 source(here("functions/priorities.R"))
+source(here("functions/annual_adjustment.R"))
 
 
 # ---- apply_budget -----
@@ -67,14 +68,15 @@ traditional_run <- function(assets,
                             necessary_actions = replace_by_age,
                             cost_adjustment = inflation,
                             priorities = prioritize_longest_wait,
+                            annual_adjustment = replace_assets,
                             skip_large = FALSE,
                             carryover = TRUE) {
   "
   Parameters:
-    assets - see input_tables.md
-    asset_types - see input_tables.md
-    asset_actions - see input_tables.md
-    budget - see input_table.md
+    assets - See input_tables.md
+    asset_types - See input_tables.md
+    asset_actions - See input_tables.md
+    budget - See input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -84,7 +86,9 @@ traditional_run <- function(assets,
     cost_adjustment - A function that meets the requirements laid out in
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
     priorities - A function that meets the requirements laid out in functions/priorities.R
-      prioritize_longest_wait by default
+      prioritize_longest_wait by default,
+    annual_adjustments - A function that meets the requirements laid out in functions/annual_adjustment.R
+      updates year_built for replaced assets by default
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
       expensive action in the prioritized list of necessary actions reveals a cheaper action
       that is still within budget, the algorithm will choose this approach. This should
@@ -169,16 +173,9 @@ traditional_run <- function(assets,
         mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
     }
 
-    # Get the subset of actions for the current year that are replacements
-    replacements <- actions[[current_year]] %>% 
-      left_join(asset_actions, by = "asset_action_id") %>% 
-      filter(replacement_flag == 1)
+    # Perform annual adjustments
+    assets <- annual_adjustment(assets, asset_types, asset_actions, actions[[current_year]], current_year)
 
-    # Update year_built for assets that have been replaced
-    assets <- assets %>% 
-      mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
-                                 current_year,
-                                 year_built))
   }
 
   # Combine all years worth of replacements into a single dataframe
