@@ -1,5 +1,5 @@
 # This file contains default options for the cost_adjustment function type.
-# These functions have access to every column in assets and asset_types the year, and
+# These functions have access to every column in assets and asset_types the current_year, and
 # start_year.
 # The update the replacement_cost column to adjustment for things like inflation and
 # agency soft costs.

@@ -7,6 +7,7 @@ library(here)
 source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
+source(here("functions/annual_adjustment.R"))
 
 
 # ---- unconstrained_run ----
@@ -16,12 +17,13 @@ unconstrained_run <- function(assets,
                               start_year,
                               end_year,
                               necessary_actions = replace_by_age,
-                              cost_adjustment = inflation) {
+                              cost_adjustment = inflation,
+                              annual_adjustment = replace_assets) {
   "
   Parameters:
-    assets - see input_tables.md
-    asset_types - see input_tables.md
-    asset_actions - see input_tables.md
+    assets - See input_tables.md
+    asset_types - See input_tables.md
+    asset_actions - See input_tables.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -30,6 +32,8 @@ unconstrained_run <- function(assets,
       functions/necessary_actions.R. replace_by_age by default.
     cost_adjustment - A function that meets the requirements laid out in
       functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
+    annual_adjustments - A function that meets the requirements laid out in functions/annual_adjustment.R
+      updates year_built for replaced assets by default
 
   Returns:
     performed_actions - see output_tables.md
