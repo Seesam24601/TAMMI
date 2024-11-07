@@ -28,6 +28,8 @@ The `assets` table
 
 By default, this the `replace_assets` function. This returns the `assets` table with the `year_built` column replaced for every asset with an action in `performed_actions` where `replacement_flag` is 1.
 
+Changing this from its default may cause issues with the default `actions_by_age` function for the `necessary_actions` function type. See the section on that function for details.
+
 
 ## Cost Adjustment
 
@@ -56,6 +58,35 @@ By default this is the `inflation` function. This updates the `cost` column  to 
 
 
 ## Necessary Actions
+
+This function takes every possible combination of asset and action (where both the asset and action have the same type) and returns the subset that are necessary in the `current_year`.
+
+### Inputs
+
+- `asset_details` table
+- `previous_actions`: All actions that have been allocated in previous years. Must meet the same criteria as the `performed_actions` table type. This is so that a function of this type could know the last time an action was performed for a specific asset
+- `current_year`: The current year as an integer value
+
+### Outputs
+
+- `asset_details` table
+
+### Requirements
+
+1. The fields of the `asset_details` table cannot change
+2. The output `asset_details` table must be a susbet of the input `asset_details` table with none of the values changed
+
+### Defaults
+
+By default this is the `actions_by_age` function. This function has the additional requirement that `asset_details` has an `age_trigger` field. The requirements for this field are as follows:
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `age_trigger` | | Age at which, ideally, the action should be performed. The action may be scheduled after the asset reaches the age trigger in cases where there is limited budget. This must be integer-valued. |
+
+This function takes each action and deems it only necessary when the age (`current_year`  - `year_built`) of the asset is greater than `age_trigger`. 
+
+Each action can only be deemed necessary once for each asset until replacement. That means for actions where `replacement_flag` is 0, after they are performed they cannot be deemed necessary again for that same asset until `year_built` for that action changes. It is assumed that this only changes when the asset has a replacement action performed. This is handled by the `replace_assets` function that is the default for the `annual_adjustment` function type. Other functions used for this function type that do not also have this behavior may be incompatible with `actions_by_age`.
 
 
 ## Priorities

@@ -1,24 +1,11 @@
 # This file contains default options for the necessary_actions function type.
-# These functions have access to every column in assets, asset_types, asset_actions, and the year.
-# They then return a subset of the input dataframe that is the assets that need
-# replacement.
 
 
-replace_by_age <- function(asset_details,
+actions_by_age <- function(asset_details,
                            previous_actions,
                            current_year) {
   "
-  Parameters:
-    asset_details - The result of left joining asset_types and asset_actions onto assets by asset_type_id.
-      The year_built column should reflect any previous replacements made to assets by
-      this model run.
-    previous_actions - All actions that have been allocated in previous years. Must meet the same criteria 
-      as the performed_actions table type
-    current_year - Current year
-
-  Returns
-    Returns a subset of asset_details where the age of the asset in year is greater than 
-    or equal to the useful_life for its asset type.
+  See docs/functions.md
   "
 
   # Assert asset_details has the age_trigger column
