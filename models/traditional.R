@@ -73,22 +73,18 @@ traditional_run <- function(assets,
                             carryover = TRUE) {
   "
   Parameters:
-    assets - See input_tables.md
-    asset_types - See input_tables.md
-    asset_actions - See input_tables.md
-    budget - See input_table.md
+    assets - See docs/input_tables.md
+    asset_types - See docs/input_tables.md
+    asset_actions - See docs/input_tables.md
+    budget - See docs/input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
       integer value. This should >= start_year.
-    necessary_actions - A function that meets the parameters laid out in
-      functions/necessary_actions.R. replace_by_age by default.
-    cost_adjustment - A function that meets the requirements laid out in
-      functions/cost_adjustment.R inflation with an inflation_rate of 0.03 by default.
-    priorities - A function that meets the requirements laid out in functions/priorities.R
-      prioritize_longest_wait by default,
-    annual_adjustments - A function that meets the requirements laid out in functions/annual_adjustment.R
-      updates year_built for replaced assets by default
+    necessary_actions - See docs/functions.md
+    cost_adjustment - See docs/functions.md
+    priorities - See docs/functions.md
+    annual_adjustments - See docs/functions.md
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
       expensive action in the prioritized list of necessary actions reveals a cheaper action
       that is still within budget, the algorithm will choose this approach. This should
