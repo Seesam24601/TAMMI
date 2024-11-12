@@ -12,6 +12,9 @@ necessary_actions_wrapper <- function(supplied_function,
   # Collect the columns of the asset_details table
   columns <- colnames(asset_details)
 
+  # Create a copy of asset_details to refer to later
+  reference <- asset_details
+
   # Run function
   result <- supplied_function(asset_details,
                               previous_actions,
@@ -19,6 +22,13 @@ necessary_actions_wrapper <- function(supplied_function,
   
   # Assert that the columns of the asset details table hasn't changed
   columns_in_df(result, columns, "asset_details")
+
+  # Assert that result is a subset of the asset_details table
+  # The input here has been saved as reference
+  error_message <- "The function supplied for necessary actions returned something other than a subset of the asset_details table."
+  if (all(suppressMessages(result %>% anti_join(reference) %>%  nrow() != 0))) {
+    stop(error_message, call. = FALSE)
+  }
   
   # Return result
   result
