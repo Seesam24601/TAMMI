@@ -69,7 +69,7 @@ This function takes every possible combination of asset and action (where both t
 
 ### Outputs
 
-- `asset_details` table
+- Subset of the `asset_details` table
 
 ### Requirements
 
@@ -84,11 +84,34 @@ By default this is the `actions_by_age` function. This function has the addition
 | ---- | ---- | ---- |
 | `age_trigger` | | Age at which, ideally, the action should be performed. The action may be scheduled after the asset reaches the age trigger in cases where there is limited budget. This must be integer-valued. |
 
-This function takes each action and deems it only necessary when the age (`current_year`  - `year_built`) of the asset is greater than `age_trigger`. 
+This function takes each action and deems it only necessary when the age `(current_year  - year_built)` of the asset is greater than `age_trigger`. 
 
 Each action can only be deemed necessary once for each asset until replacement. That means for actions where `replacement_flag` is 0, after they are performed they cannot be deemed necessary again for that same asset until `year_built` for that action changes. It is assumed that this only changes when the asset has a replacement action performed. This is handled by the `replace_assets` function that is the default for the `annual_adjustment` function type. Other functions used for this function type that do not also have this behavior may be incompatible with `actions_by_age`.
 
 
 ## Priorities
 
-This occurs after the cost adjustment function has been applied.
+This function takes the necessary actions and reorders them so that they are in the order the model should apply funding to them. This occurs after the necessary actions and cost adjustment functions have been applied.
+
+### Inputs
+
+- `necessary_actions` table: This is a subset of the `asset_details` table that is the result of applying both the necessary actions and cost adjustment functions
+- `current_year`: The current year as an integer value
+
+### Outputs
+
+- `necessary_actions` table reordered
+
+### Requirements
+
+1. The output `necessary_actions` table must be a rearrangement of the input `necessary_actions` table/
+
+### Defaults
+
+By default this is the `prioritize_longest_wait` function. This function has the additional requirement that `asset_details` has an `age_trigger` field. The requirements for this field are as follows:
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `age_trigger` | | Age at which, ideally, the action should be performed. The action may be scheduled after the asset reaches the age trigger in cases where there is limited budget. This must be integer-valued. |
+
+This function rearranges `necessary_actions` so that it is ordered by longest time the action has been necessary. This is calculated by taking `(current_year - year_built) - age_trigger`.
