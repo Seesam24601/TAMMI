@@ -1,24 +1,45 @@
 # This file contains default options for the necessary_actions function type.
-# These functions have access to every column in assets, asset_types, asset_actions, and the year.
-# They then return a subset of the input dataframe that is the assets that need
-# replacement.
 
 
-replace_by_age <- function(asset_details,
+necessary_actions_wrapper <- function(supplied_function,
+                                      asset_details,
+                                      previous_actions,
+                                      current_year) {
+  "
+  Enforces the requirements for the necessary actions function type as laid out in docs/function.md
+  "
+
+  # Collect the columns of the asset_details table
+  columns <- colnames(asset_details)
+
+  # Create a copy of asset_details to refer to later
+  reference <- asset_details
+
+  # Run function
+  result <- supplied_function(asset_details,
+                              previous_actions,
+                              current_year)
+  
+  # Assert that the columns of the asset details table hasn't changed
+  columns_in_df(result, columns, "asset_details")
+
+  # Assert that result is a subset of the asset_details table
+  # The input here has been saved as reference
+  error_message <- "The function supplied for necessary actions returned something other than a subset of the asset_details table."
+  if (all(suppressMessages(result %>% anti_join(reference) %>%  nrow() != 0))) {
+    stop(error_message, call. = FALSE)
+  }
+  
+  # Return result
+  result
+}
+
+
+actions_by_age <- function(asset_details,
                            previous_actions,
                            current_year) {
   "
-  Parameters:
-    asset_details - The result of left joining asset_types and asset_actions onto assets by asset_type_id.
-      The year_built column should reflect any previous replacements made to assets by
-      this model run.
-    previous_actions - All actions that have been allocated in previous years. Must meet the same criteria 
-      as the performed_actions table type
-    current_year - Current year
-
-  Returns
-    Returns a subset of asset_details where the age of the asset in year is greater than 
-    or equal to the useful_life for its asset type.
+  See docs/functions.md
   "
 
   # Assert asset_details has the age_trigger column

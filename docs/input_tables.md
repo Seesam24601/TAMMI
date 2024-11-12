@@ -32,14 +32,27 @@ This table contains 1 row for every action. An action is a capital cost associat
 | `cost` | | The cost of the action. This must be integer-valued. |
 | `replacement_flag` | | 1 if the action is a replacement; 0 otherwise. Replacements differ from other actions in that replacements update the year_built field of the asset. Once an asset is replaced, it can receive non-replacement actions that it has previously received again. |
 
-The following field is only reuqired when using the default neccesary actions function of `replace_by_age`:
+The following field is only reuqired when using the default neccesary actions function of `actions_by_age`:
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
 | `age_trigger` | | Age at which, ideally, the action should be performed. The action may be scheduled after the asset reaches the age trigger in cases where there is limited budget. This must be integer-valued. |
 
 
-# budget
+## asset_details
+
+The `asset_details` table is not an input table, but rather one created by models. It is often one of the inputs for the user-supplied functions discussed in docs/functions.md. `asset_details` is created by the following R code:
+
+```
+    asset_details <- assets %>% 
+      left_join(asset_types, by = "asset_type_id") %>% 
+      left_join(asset_actions, by = "asset_type_id", relationship = "many-to-many")
+```
+
+`asset_details` has one record for each combination of asset and an action that can be applied to that asset. Any function that references the `asset_details` table has access to any field in the `assets`, `asset_types`, and `asset_actions` tables.
+
+
+## budget
 
 This table contains 1 row for every year.
 

@@ -1,8 +1,50 @@
 # This file contains default options for the cost_adjustment function type.
-# These functions have access to every column in assets and asset_types the current_year, and
-# start_year.
-# The update the replacement_cost column to adjustment for things like inflation and
-# agency soft costs.
+
+
+cost_adjustment_wrapper <- function(supplied_function,
+                                    asset_details,
+                                    current_year,
+                                    start_year) {
+  "
+  Enforces the requirements for the cost adjustment function type as laid out in docs/function.md
+  "
+  
+  # Collect the number of rows of the asset_details table
+  rows <- nrow(asset_details)
+
+  # Collect the columns of the asset_details table
+  columns <- colnames(asset_details)
+
+  # Collect every part of the asset_details table except the cost column
+  reference <- asset_details %>% 
+    subset(select = -cost)
+
+  # Run function
+  result <- supplied_function(asset_details,
+                              current_year,
+                              start_year)
+
+  # Assert that the number of rows of the asset_details table hasn't changed
+  error_message <- paste("The number of rows of the asset_details table was changed by the function supplied for cost adjustment")
+  if (rows != nrow(result)) {
+    stop(error_message, call. = FALSE)
+  }
+
+  # Assert that the columns of the asset details table hasn't changed
+  columns_in_df(result, columns, "asset_details")
+
+  # Assert that every part of the asset_details table except the cost column hasn't been changed
+  error_message <- paste("Part of the asset_details other than the cost column have been changed by the function supplied for cost adjustment")
+  if (!identical(reference, result %>%  subset(select = -cost))) {
+    stop(error_message, call. = FALSE)
+  }
+
+  # Assert that the cost field is still integer-valued
+  is_integer_col(asset_details$cost, "asset_details", "cost")
+
+  # Return result
+  result
+}
 
 
 inflation <- function(asset_details,
@@ -10,20 +52,7 @@ inflation <- function(asset_details,
                       start_year,
                       inflation_rate = 0.03) {
   "
-  Parameters:
-    asset_details - The result of left joining asset_types onto assets by asset_type_id.
-      The year_built column should reflect any previous replacements made to assets by
-      this model run.
-    current_year - Current year. Must be greated than start_year
-    start_year - Year the model started on. This is considered the base year for
-      inflation calculations. All costs should be listed in dollars for that year
-    inflation_rate - 0.03 by default
-
-  Returns
-    The asset_details dataframe with the replacement_cost column updated to reflect the
-    inflation that is expected to occur between year and start_year. Inflation is 
-    calculated as occuring at inflation_rate starting at start_year and compounding
-    annually. The results are rounded to two decimal places.
+  See docs/functions.md
   "
 
   # Assert that start_year and year are both integer-valued and that year >= start_year
