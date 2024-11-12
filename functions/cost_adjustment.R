@@ -30,7 +30,7 @@ cost_adjustment_wrapper <- function(supplied_function,
     stop(error_message, call. = FALSE)
   }
 
-  # Assert that the columns of the assets table hasn't changed
+  # Assert that the columns of the asset details table hasn't changed
   columns_in_df(result, columns, "asset_details")
 
   # Assert that every part of the asset_details table except the cost column hasn't been changed

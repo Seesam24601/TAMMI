@@ -16,7 +16,7 @@ unconstrained_run <- function(assets,
                               asset_actions,
                               start_year,
                               end_year,
-                              necessary_actions = replace_by_age,
+                              necessary_actions = actions_by_age,
                               cost_adjustment = inflation,
                               annual_adjustment = replace_assets) {
   "
@@ -68,7 +68,7 @@ unconstrained_run <- function(assets,
     # Get a list of replacements that need to be made in year
     actions[[current_year]] <- asset_details %>% 
     
-      necessary_actions(previous_actions, current_year) %>% 
+      necessary_actions_wrapper(necessary_actions, ., previous_actions, current_year) %>% 
       
       # Apply cost adjustments
       cost_adjustment_wrapper(cost_adjustment, ., current_year, start_year) %>% 

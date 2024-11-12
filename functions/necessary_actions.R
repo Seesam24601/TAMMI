@@ -1,6 +1,30 @@
 # This file contains default options for the necessary_actions function type.
 
 
+necessary_actions_wrapper <- function(supplied_function,
+                                      asset_details,
+                                      previous_actions,
+                                      current_year) {
+  "
+  Enforces the requirements for the necessary actions function type as laid out in docs/function.md
+  "
+
+  # Collect the columns of the asset_details table
+  columns <- colnames(asset_details)
+
+  # Run function
+  result <- supplied_function(asset_details,
+                              previous_actions,
+                              current_year)
+  
+  # Assert that the columns of the asset details table hasn't changed
+  columns_in_df(result, columns, "asset_details")
+  
+  # Return result
+  result
+}
+
+
 actions_by_age <- function(asset_details,
                            previous_actions,
                            current_year) {
