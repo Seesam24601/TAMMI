@@ -1,6 +1,23 @@
 # Functions
 
 
+## Function Parameters
+
+Some user-supplied functions may have additional parameters that users will want to change between model runs. This can be done by supplying the parameter before the function is given to the model using an anonymous function. E.g. setting
+
+```
+cost_adjustment = function(...)(inflation(inflation_rate = 0.1, ...))
+```
+
+instead of 
+
+```
+cost_adjustment = inflation
+```
+
+to set the `inflation_rate` parameter of the `inflation` function to 0.1.
+
+
 ## Annual Adjustment
 
 This function makes updates to the assets in the `assets` table after the actions for `current_year` have been performed. This is NOT run before the `current_year` is `start_year`. 
@@ -54,7 +71,9 @@ This function updates the cost of an action. Typically, this involves making adj
 
 ### Defaults
 
-By default this is the `inflation` function. This updates the `cost` column  to reflect the inflation that is expected to occur between `current_year` and `start_year`. Inflation is calculated as occuring at `inflation_rate` starting at `start_year` and compounding annually. The results are rounded to two decimal places. This has the optional input parameter of `inflation_rate`. By default `inflation_rate` is 0.3.
+By default this is the `inflation` function. This updates the `cost` column  to reflect the inflation that is expected to occur between `current_year` and `start_year`. Inflation is calculated as occuring at `inflation_rate` starting at `start_year` and compounding annually. The results are rounded to two decimal places. This has the optional input parameter of `inflation_rate`. By default `inflation_rate` is 0.3. 
+
+For more information about changing the `inflation_rate` see the section on Function Parameters above.
 
 
 ## Necessary Actions
