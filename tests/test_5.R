@@ -66,3 +66,9 @@ test_that(test_name, {
   )
 })
 
+
+# ---- Close ---
+
+# Remove all objects to they don't affect subsequent tests
+# Don't remove list of unit tests
+rm(list = setdiff(ls(), "unit_tests"))
