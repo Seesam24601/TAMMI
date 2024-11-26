@@ -1,4 +1,4 @@
-test_name = "Test 6: Inflation"
+test_name = "Test 9: Skip large"
 
 
 # ---- Inputs ----
@@ -14,41 +14,25 @@ asset_types <- tibble(
 )
 
 asset_actions <- tibble(
-  asset_action_id = c(0),
-  asset_type_id = c(0),
-  age_trigger = c(5),
-  cost = c(100),
-  replacement_flag = c(1)
+  asset_action_id = c(0, 1),
+  asset_type_id = c(0, 0),
+  age_trigger = c(5, 10),
+  cost = c(100, 50),
+  replacement_flag = c(0, 1)
 )
 
 budget <- tibble(
-  year = 2000:2005,
-  budget = rep(1000)
+  year = c(2000),
+  budget = c(50)
 )
 
 start_year <- 2000
-end_year <- 2005
+end_year <- 2000
 
 
 # ---- Test -----
 
 test_that(test_name, {
-  expect_equal(
-    unconstrained_run(
-      assets, 
-      asset_types, 
-      asset_actions, 
-      start_year, 
-      end_year),
-    tibble(
-      year = c(2000, 2005),
-      asset_id = c(0, 0),
-      asset_type_id = c(0, 0),
-      asset_action_id = c(0, 0),
-      cost = c(100, 116)
-    ),
-    tolerance = 0.001
-  )
   expect_equal(
     traditional_run(
       assets, 
@@ -58,13 +42,30 @@ test_that(test_name, {
       start_year, 
       end_year),
     tibble(
-      year = c(2000, 2005),
-      asset_id = c(0, 0),
-      asset_type_id = c(0, 0),
-      asset_action_id = c(0, 0),
-      cost = c(100, 116)
-    ),
-    tolerance = 0.001
+      year = numeric(0),
+      asset_id = numeric(0),
+      asset_type_id = numeric(0),
+      asset_action_id = numeric(0),
+      cost = numeric(0)
+    )
+  )
+  expect_equal(
+    traditional_run(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budget,
+      start_year, 
+      end_year,
+      skip_large = TRUE,
+      carryover = FALSE),
+    tibble(
+      year = c(2000),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      asset_action_id = c(1),
+      cost = c(50)
+    )
   )
 })
 

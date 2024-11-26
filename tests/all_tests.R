@@ -12,6 +12,9 @@ source(here("models/traditional.R"))
 # Get all unit tests
 unit_tests <- list.files(path = here("tests"), pattern = "^test.*\\.R$", full.names = TRUE)
 
+# For debugging a specific unit test
+# unit_tests <- c(here("tests", "test_9.R"))
+
 # Run each unit test
 lapply(unit_tests, source)
 

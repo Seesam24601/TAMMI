@@ -1,4 +1,4 @@
-test_name = "Test 3: Multiple years"
+test_name = "Test 8: Carryover"
 
 
 # ---- Inputs ----
@@ -22,12 +22,12 @@ asset_actions <- tibble(
 )
 
 budget <- tibble(
-  year = 2000:2005,
-  budget = rep(1000)
+  year = 2000:2001,
+  budget = rep(50)
 )
 
 start_year <- 2000
-end_year <- 2005
+end_year <- 2001
 
 # Dummy function to ignore inflation
 cost_adjustment_dummy <- function(
@@ -43,19 +43,20 @@ cost_adjustment_dummy <- function(
 
 test_that(test_name, {
   expect_equal(
-    unconstrained_run(
+    traditional_run(
       assets, 
       asset_types, 
       asset_actions, 
+      budget,
       start_year, 
       end_year,
       cost_adjustment = cost_adjustment_dummy),
     tibble(
-      year = c(2000, 2005),
-      asset_id = c(0, 0),
-      asset_type_id = c(0, 0),
-      asset_action_id = c(0, 0),
-      cost = c(100, 100)
+      year = c(2001),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      asset_action_id = c(0),
+      cost = c(100)
     )
   )
   expect_equal(
@@ -66,15 +67,16 @@ test_that(test_name, {
       budget,
       start_year, 
       end_year,
+      carryover = FALSE,
       cost_adjustment = cost_adjustment_dummy),
     tibble(
-      year = c(2000, 2005),
-      asset_id = c(0, 0),
-      asset_type_id = c(0, 0),
-      asset_action_id = c(0, 0),
-      cost = c(100, 100)
+      year = numeric(0),
+      asset_id = numeric(0),
+      asset_type_id = numeric(0),
+      asset_action_id = numeric(0),
+      cost = numeric(0)
     )
-  )
+)
 })
 
 
