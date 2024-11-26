@@ -2,6 +2,7 @@
 
 library(tidyverse)
 library(here)
+library(testthat)
 
 source(here("models/unconstrained.R"))
 
@@ -23,6 +24,6 @@ unconstrained_actions <- read_delim(here("tests/test_files/unconstrained_actions
 results <- unconstrained_run(assets, asset_types, asset_actions, 2000, 2020)
 
 # Verify results
-if (!identical(as_tibble(results), as_tibble(unconstrained_actions))) {
-  stop("Unconstrained model is not functioning as intended")
-}
+test_that("Test unconstrained model", {
+  expect_equal(as_tibble(results), as_tibble(unconstrained_actions))
+})
