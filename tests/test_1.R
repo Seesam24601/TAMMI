@@ -1,4 +1,4 @@
-test_name = "Test 1: unconstrained run, 1 asset"
+test_name = "Test 1: 1 asset"
 
 # ---- Inputs ----
 

@@ -10,8 +10,7 @@ source(here("models/unconstrained.R"))
 source(here("models/traditional.R"))
 
 # Get all unit tests
-# unit_tests <- list.files(path = here("tests"), pattern = "^test.*\\.R$", full.names = TRUE)
-unit_tests <- c(here("tests", "test_1.R"))
+unit_tests <- list.files(path = here("tests"), pattern = "^test.*\\.R$", full.names = TRUE)
 
 # Run each unit test
 lapply(unit_tests, source)
