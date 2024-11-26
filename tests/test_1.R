@@ -1,17 +1,5 @@
 test_name = "Test 1: unconstrained run, 1 asset"
 
-
-# ---- Setup ----
-
-# Load libraries
-library(tidyverse)
-library(here)
-library(testthat)
-
-# Load model that is being tested 
-source(here("models/unconstrained.R"))
-
-
 # ---- Inputs ----
 
 assets <- tibble(
@@ -30,6 +18,11 @@ asset_actions <- tibble(
   age_trigger = c(5),
   cost = c(100),
   replacement_flag = c(1)
+)
+
+budget <- tibble(
+  year = c(2000),
+  budget = c(1000)
 )
 
 start_year <- 2000
@@ -54,11 +47,34 @@ test_that(test_name, {
       cost = c(100)
     )
   )
+  expect_equal(
+    traditional_run(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budget,
+      start_year, 
+      end_year),
+    tibble(
+      year = c(2000),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      asset_action_id = c(0),
+      cost = c(100)
+    )
+  )
 })
 
 
 # ---- Close ---
 
 # Remove all objects to they don't affect subsequent tests
-# Don't remove list of unit tests
-rm(list = setdiff(ls(), "unit_tests"))
+rm(list = c(
+  "test_name",
+  "assets",
+  "asset_types",
+  "asset_actions",
+  "budget",
+  "start_year",
+  "end_year"
+))
