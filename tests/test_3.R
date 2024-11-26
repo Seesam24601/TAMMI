@@ -1,4 +1,4 @@
-test_name = "Test 1: unconstrained run, 1 asset"
+test_name = "Test 3: unconstrained run, multiple years"
 
 
 # ---- Setup ----
@@ -33,7 +33,16 @@ asset_actions <- tibble(
 )
 
 start_year <- 2000
-end_year <- 2000
+end_year <- 2005
+
+# Dummy function to ignore inflation
+cost_adjustment_dummy <- function(
+  asset_details,
+  current_year,
+  start_year
+) {
+  asset_details
+}
 
 
 # ---- Test -----
@@ -45,13 +54,14 @@ test_that(test_name, {
       asset_types, 
       asset_actions, 
       start_year, 
-      end_year),
+      end_year,
+      cost_adjustment = cost_adjustment_dummy),
     tibble(
-      year = c(2000),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      asset_action_id = c(0),
-      cost = c(100)
+      year = c(2000, 2005),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      asset_action_id = c(0, 0),
+      cost = c(100, 100)
     )
   )
 })

@@ -1,4 +1,4 @@
-test_name = "Test 1: unconstrained run, 1 asset"
+test_name = "Test 6: unconstrained run, inflation"
 
 
 # ---- Setup ----
@@ -33,7 +33,7 @@ asset_actions <- tibble(
 )
 
 start_year <- 2000
-end_year <- 2000
+end_year <- 2005
 
 
 # ---- Test -----
@@ -47,12 +47,13 @@ test_that(test_name, {
       start_year, 
       end_year),
     tibble(
-      year = c(2000),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      asset_action_id = c(0),
-      cost = c(100)
-    )
+      year = c(2000, 2005),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      asset_action_id = c(0, 0),
+      cost = c(100, 116)
+    ),
+    tolerance = 0.001
   )
 })
 

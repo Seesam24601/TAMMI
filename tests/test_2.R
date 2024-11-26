@@ -1,4 +1,4 @@
-test_name = "Test 1: unconstrained run, 1 asset"
+test_name = "Test 2: unconstrained run, 2 assets"
 
 
 # ---- Setup ----
@@ -15,9 +15,9 @@ source(here("models/unconstrained.R"))
 # ---- Inputs ----
 
 assets <- tibble(
-  asset_id = c(0),
+  asset_id = c(0, 1),
   asset_type_id = c(0),
-  year_built = c(1990)
+  year_built = c(1990, 1995)
 )
 
 asset_types <- tibble(
@@ -47,11 +47,11 @@ test_that(test_name, {
       start_year, 
       end_year),
     tibble(
-      year = c(2000),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      asset_action_id = c(0),
-      cost = c(100)
+      year = c(2000, 2000),
+      asset_id = c(0, 1),
+      asset_type_id = c(0, 0),
+      asset_action_id = c(0, 0),
+      cost = c(100, 100)
     )
   )
 })
