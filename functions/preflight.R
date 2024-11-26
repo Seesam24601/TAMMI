@@ -81,10 +81,10 @@ is_flag_col <- function(col, df_name, col_name) {
   "
   error_message <- paste("The", col_name, "field in", df_name, "contains a value other than 0 or 1")
   
-  if (!identical(unique(col), c(0L, 1L)) &
-      !identical(unique(col), c(1L, 0L)) &
-      !identical(unique(col), 0L)  & 
-      !identical(unique(col), 1L) ) {
+  if (!identical(unique(col), c(0, 1)) &
+      !identical(unique(col), c(1, 0)) &
+      !identical(unique(col), 0)  & 
+      !identical(unique(col), 1) ) {
     stop(error_message, call. = FALSE)
   }
 }
