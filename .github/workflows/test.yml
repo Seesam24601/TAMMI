@@ -32,8 +32,7 @@ jobs:
           r-version: ${{ matrix.r-version }}
       - name: Install dependencies
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
-          remotes::install_deps(dependencies = TRUE)
+          install.packages(c("tidyverse", "here", "testthat")) 
         shell: Rscript {0}
       - name: Check
         run: Rscript -e 'source("tests/all_tests.R")'
