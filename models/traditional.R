@@ -13,7 +13,8 @@ source(here("functions/annual_adjustment.R"))
 
 # ---- apply_budget -----
 apply_budget <- function(necessary_actions,
-                         current_budget,
+                         budget,
+                         budget_actions,
                          skip_large) {
   "
   Parameters:
@@ -28,33 +29,66 @@ apply_budget <- function(necessary_actions,
   by the additional settings like skip_large and carryover
   "
 
-  # If skip_large is TRUE, a for loop is required
-  # This may result in worse peformance on large datasets
-  if (skip_large) {
-    necessary_actions %>% 
+  # Create an empty vector add performed actions to
+  # After every necessary action has been considered, this vector will be row binded into a single tibble
+  performed_actions <- c()
 
-      # Spend less than or equal to the budget for a given year
-      # In the case that adding the current cost would cause the total_cost to be over the budget, skip
-      # that record and return the total_cost for the previous record
-      mutate(total_cost = accumulate(cost, ~ if (.x + .y <= current_budget) .x + .y else .x, .init = 0)[-1]) %>% 
+  # Loop through every necessary action
+  for (i in 1:nrow(necessary_actions)){
+
+    # Get a single row that represents the necessary action and the budget that will be used to pay for it
+    performed_action <- necessary_actions %>% 
+
+      # Only look at the asset-action combination in row i of the necessary_actions table
+      filter(row_number() == i) %>% 
+
+      # Get all available budgets for a given action
+      # I considered performing this line outside the loop, as it should be more performant,
+      # but doing so makes iterating over the asset-action combinations more complicated
+      # In the future, changing this may be worth it if performance is a problem
+      inner_join(budget_actions, by = join_by(action_id == action_id)) %>% 
       
-      # Remove records who have the same total_cost as the previous record, since this means that 
-      # adding that record would have exceeded the budget
-      # The replace_na is used to not drop the first row since lag(total_cost) would be NA for that record
-      # There should be no other NAs that are replaced here
-      filter(total_cost != replace_na(lag(total_cost), 0))  
+      # Get the current value in each budget
+      inner_join(budgets, by = join_by(budget_id == budget_id)) %>% 
+      
+      # Only consider budgets that have another budget remaining to cover the cost of the action
+      filter(cost <= budget) %>% 
+      
+      # Get the top row
+      # In the future, this should use a new user-suppliable function to prioritize which budget
+      # to use. 
+      # That function should require that the result is a tibble with either 0 or 1 rows
+      slice(1)
+    
+      # It is not necessary to restrict the fields returned since that task is performed in the 
+      # traditional_run function before the result is returns
+      # Note that the budget value is not updated here, but instead by altering the budgets tibble
+    
+    print(performed_action)
+  
+    # In the case that there is enough budget to perform the action
+    if (nrow(performed_action) == 1){
+      
+      # Remove that cost from the correct budget
+      budgets <- budgets %>% 
+        mutate(
+          budget = if_else(
+            budget_id == pull(performed_action, budget),
+            budget - pull(performed_action, cost),
+            budget
+          )
+        )
+      
+      # Add action to list of performed actions
+      performed_actions[[i]] <- performed_action
 
-  }
+    }
+  }   
+  
+  # Combine all performed_actions into a single tibble that is returned
+  print(performed_actions)
+  do.call(bind_rows, performed_actions)
 
-  # If skip_large is FALSE, use cumsum for better optimization
-  else {
-    necessary_actions %>% 
-
-      # Spend less than or equal to the budget for a given year
-      mutate(total_cost = cumsum(cost)) %>% 
-      filter(total_cost <= current_budget)  
-
-  }          
 }
 
 
@@ -62,7 +96,8 @@ apply_budget <- function(necessary_actions,
 traditional_run <- function(assets,
                             asset_types,
                             asset_actions,
-                            budget,
+                            budgets,
+                            budget_actions,
                             start_year,
                             end_year,
                             necessary_actions = actions_by_age,
@@ -111,7 +146,8 @@ traditional_run <- function(assets,
   test_asset_actions(asset_actions, asset_types)
 
   # Assert that budget dataframe meets its requirements
-  test_budget(budget, start_year, end_year)
+  # This will be updated to reflect the new budgets and budget_actions tables in the future
+  # test_budget(budget, start_year, end_year)
 
   # Warn users if both skip_large and carryover are set to TRUE
   warning_message <- "Both skip_large and carryover are set to TRUE"
@@ -131,11 +167,6 @@ traditional_run <- function(assets,
 
     # Get the subset of assets that need to be replaced in year
     previous_actions <- do.call(rbind, actions)
-
-    # Get budget for current_year
-    current_budget <- budget %>%
-      filter(year == current_year) %>% 
-      pull(budget)
     
     # Get a list of replacements that need to be made in year
     actions[[current_year]] <- asset_details %>% 
@@ -149,12 +180,12 @@ traditional_run <- function(assets,
       priorities_wrapper(priorities, ., current_year) %>% 
       
       # Apply budget
-      apply_budget(current_budget, skip_large) %>% 
+      apply_budget(budgets, budget_actions, skip_large) %>% 
 
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
       
-      subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
+      subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
     
     # Carry over left over budget if carryover is TRUE
     if (carryover) {
