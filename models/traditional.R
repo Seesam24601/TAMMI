@@ -12,7 +12,7 @@ source(here("functions/annual_adjustment.R"))
 
 
 # ---- apply_budget -----
-apply_budget <- function(necessary_actions,
+apply_budget <- function(prioritized_necessary_actions,
                          budget,
                          budget_actions,
                          skip_large) {
@@ -34,10 +34,10 @@ apply_budget <- function(necessary_actions,
   performed_actions <- c()
 
   # Loop through every necessary action
-  for (i in 1:nrow(necessary_actions)){
+  for (i in 1:nrow(prioritized_necessary_actions)){
 
     # Get a single row that represents the necessary action and the budget that will be used to pay for it
-    performed_action <- necessary_actions %>% 
+    performed_action <- prioritized_necessary_actions %>% 
 
       # Only look at the asset-action combination in row i of the necessary_actions table
       filter(row_number() == i) %>% 
@@ -63,8 +63,6 @@ apply_budget <- function(necessary_actions,
       # It is not necessary to restrict the fields returned since that task is performed in the 
       # traditional_run function before the result is returns
       # Note that the budget value is not updated here, but instead by altering the budgets tibble
-    
-    print(performed_action)
   
     # In the case that there is enough budget to perform the action
     if (nrow(performed_action) == 1){
@@ -86,8 +84,10 @@ apply_budget <- function(necessary_actions,
   }   
   
   # Combine all performed_actions into a single tibble that is returned
-  print(performed_actions)
-  do.call(bind_rows, performed_actions)
+  # Also return the budgets tibble as it has been updated with the current budget values
+  list(
+    performed_actions  =do.call(bind_rows, performed_actions), 
+    budgets = budgets)
 
 }
 
@@ -168,8 +168,8 @@ traditional_run <- function(assets,
     # Get the subset of assets that need to be replaced in year
     previous_actions <- do.call(rbind, actions)
     
-    # Get a list of replacements that need to be made in year
-    actions[[current_year]] <- asset_details %>% 
+    # Get a list of asset-action combinations that need to be made in year
+    prioritized_necessary_actions <- asset_details %>% 
     
       necessary_actions_wrapper(necessary_actions, ., previous_actions, current_year) %>% 
       
@@ -177,10 +177,16 @@ traditional_run <- function(assets,
       cost_adjustment_wrapper(cost_adjustment, ., current_year, start_year) %>% 
       
       # Order based on priorities
-      priorities_wrapper(priorities, ., current_year) %>% 
-      
-      # Apply budget
-      apply_budget(budgets, budget_actions, skip_large) %>% 
+      priorities_wrapper(priorities, ., current_year)
+    
+    # Apply budgets and get both performed_actions and an updated budgets object from the results
+    results <- prioritized_necessary_actions %>% 
+      apply_budget(budgets, budget_actions, skip_large)
+    performed_actions <- results$performed_actions
+    budgets <- results$budgets
+
+    # Set performed actions for the current_year
+    actions[[current_year]] <- performed_actions %>% 
 
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
@@ -188,17 +194,19 @@ traditional_run <- function(assets,
       subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
     
     # Carry over left over budget if carryover is TRUE
-    if (carryover) {
+    # This needs to be updated to use the new multiple budget system
+    # That will be completed at a later date
+    # if (carryover) {
 
-      # Calculate the amount of left over budget
-      left_over_budget <- current_budget - actions[[current_year]] %>% 
-        summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
-        pull(total_cost)
+    #   # Calculate the amount of left over budget
+    #   left_over_budget <- current_budget - actions[[current_year]] %>% 
+    #     summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
+    #     pull(total_cost)
 
-      # Update the budget for the next year with the leftovers
-      budget <- budget %>% 
-        mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
-    }
+    #   # Update the budget for the next year with the leftovers
+    #   budget <- budget %>% 
+    #     mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
+    # }
 
     # Perform annual adjustments
     assets <- annual_adjustment_wrapper(annual_adjustment,
