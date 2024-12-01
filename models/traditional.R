@@ -31,7 +31,7 @@ apply_budget <- function(prioritized_necessary_actions,
 
   # Create an empty vector add performed actions to
   # After every necessary action has been considered, this vector will be row binded into a single tibble
-  performed_actions <- c()
+  performed_actions <- list()
 
   # Loop through every necessary action
   for (i in 1:nrow(prioritized_necessary_actions)){
@@ -85,9 +85,19 @@ apply_budget <- function(prioritized_necessary_actions,
   
   # Combine all performed_actions into a single tibble that is returned
   # Also return the budgets tibble as it has been updated with the current budget values
-  list(
-    performed_actions  =do.call(bind_rows, performed_actions), 
-    budgets = budgets)
+  # The if statement is to avoid calling do.call on an empty list
+  if (length(performed_actions) == 0) {
+    list(
+      performed_actions = performed_actions, 
+      budgets = budgets
+    )
+  } else {
+    list(
+      performed_actions = do.call(bind_rows, performed_actions), 
+      budgets = budgets
+    )
+  }
+
 
 }
 
@@ -185,37 +195,41 @@ traditional_run <- function(assets,
     performed_actions <- results$performed_actions
     budgets <- results$budgets
 
-    # Set performed actions for the current_year
-    actions[[current_year]] <- performed_actions %>% 
+    # Skip the following steps if there are no performed_actions
+    if (length(performed_actions) > 0) {
 
-      # Add the year of the replacement as a column
-      mutate(year = current_year) %>% 
+      # Set performed actions for the current_year
+      actions[[current_year]] <- performed_actions %>% 
+
+        # Add the year of the replacement as a column
+        mutate(year = current_year) %>% 
+        
+        subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
+
+      # Carry over left over budget if carryover is TRUE
+      # This needs to be updated to use the new multiple budget system
+      # That will be completed at a later date
+      # if (carryover) {
+
+      #   # Calculate the amount of left over budget
+      #   left_over_budget <- current_budget - actions[[current_year]] %>% 
+      #     summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
+      #     pull(total_cost)
+
+      #   # Update the budget for the next year with the leftovers
+      #   budget <- budget %>% 
+      #     mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
+      # }
+
+      # Perform annual adjustments
+      assets <- annual_adjustment_wrapper(annual_adjustment,
+                                          assets, 
+                                          asset_types, 
+                                          asset_actions, 
+                                          actions[[current_year]], 
+                                          current_year)
       
-      subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
-    
-    # Carry over left over budget if carryover is TRUE
-    # This needs to be updated to use the new multiple budget system
-    # That will be completed at a later date
-    # if (carryover) {
-
-    #   # Calculate the amount of left over budget
-    #   left_over_budget <- current_budget - actions[[current_year]] %>% 
-    #     summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
-    #     pull(total_cost)
-
-    #   # Update the budget for the next year with the leftovers
-    #   budget <- budget %>% 
-    #     mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
-    # }
-
-    # Perform annual adjustments
-    assets <- annual_adjustment_wrapper(annual_adjustment,
-                                        assets, 
-                                        asset_types, 
-                                        asset_actions, 
-                                        actions[[current_year]], 
-                                        current_year)
-
+    }
   }
 
   # Combine all years worth of replacements into a single dataframe
