@@ -68,6 +68,7 @@ test_that(test_name, {
       asset_id = c(0, 1),
       asset_type_id = c(0, 0),
       action_id = c(0, 0),
+      budget_id = c(0, 0),
       cost = c(100, 100)
     )
   )
