@@ -141,10 +141,10 @@ test_asset_actions <- function(asset_actions, asset_types) {
   "
 
   # Assert required columns exist
-  columns_in_df(asset_actions, c("asset_action_id", "asset_type_id", "cost", "replacement_flag"), "asset_actions") 
+  columns_in_df(asset_actions, c("action_id", "asset_type_id", "cost", "replacement_flag"), "asset_actions") 
   
-  # Assert asset_action_id is unique
-  is_unique_col(asset_actions$asset_action_id, "asset_actions", "asset_actions_id")
+  # Assert action_id is unique
+  is_unique_col(asset_actions$action_id, "asset_actions", "asset_actions_id")
 
   # Assert asset_type_id is in asset_types
   key_exists(asset_actions$asset_type_id, 

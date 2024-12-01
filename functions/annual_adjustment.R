@@ -53,7 +53,7 @@ replace_assets <- function(assets,
 
   # Get the subset of actions for the current year that are replacements
   replacements <- performed_actions %>% 
-    left_join(asset_actions, by = "asset_action_id") %>% 
+    left_join(asset_actions, by = "action_id") %>% 
     filter(replacement_flag == 1)
 
   # Update year_built for assets that have been replaced

@@ -57,8 +57,8 @@ actions_by_age <- function(asset_details,
     previous_actions %>% 
 
       # Combine with asset_details
-      subset(select = c(asset_id, asset_action_id, year)) %>%
-      left_join(asset_details, by =  c("asset_id", "asset_action_id")) %>% 
+      subset(select = c(asset_id, action_id, year)) %>%
+      left_join(asset_details, by =  c("asset_id", "action_id")) %>% 
 
       # Remove actions tht occurred before the replacement year
       # These were actions on the previous version of the asset
@@ -70,8 +70,8 @@ actions_by_age <- function(asset_details,
       # The above should include all actions taken on the current version of 
       # each asset_id. This then adds all aditional actions that have not
       # yet been taken.
-      subset(select = c(asset_id, asset_action_id, year)) %>%
-      right_join(asset_details, by =  c("asset_id", "asset_action_id")) %>% 
+      subset(select = c(asset_id, action_id, year)) %>%
+      right_join(asset_details, by =  c("asset_id", "action_id")) %>% 
       
       # Any actions that have a year associated with them mean that 
       # they have already been taken for a given asset_id on a given
