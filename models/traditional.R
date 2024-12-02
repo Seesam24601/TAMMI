@@ -13,8 +13,9 @@ source(here("functions/annual_adjustment.R"))
 
 # ---- apply_budget -----
 apply_budget <- function(prioritized_necessary_actions,
-                         budget,
+                         budgets,
                          budget_actions,
+                         current_year,
                          skip_large) {
   "
   Parameters:
@@ -51,7 +52,14 @@ apply_budget <- function(prioritized_necessary_actions,
       inner_join(budget_actions, by = join_by(action_id == action_id)) %>% 
       
       # Get the current value in each budget
-      inner_join(budgets, by = join_by(budget_id == budget_id)) %>% 
+      inner_join(
+
+        # Only look at the current year of budgets
+        budgets %>% 
+          filter(year == current_year), 
+
+        by = join_by(budget_id == budget_id)
+      ) %>% 
       
       # Only consider budgets that have another budget remaining to cover the cost of the action
       filter(cost <= budget) %>% 
@@ -69,11 +77,11 @@ apply_budget <- function(prioritized_necessary_actions,
     # In the case that there is enough budget to perform the action
     if (nrow(performed_action) == 1){
       
-      # Remove that cost from the correct budget
+      # Remove that cost from the current_year of the correct budget
       budgets <- budgets %>% 
         mutate(
           budget = if_else(
-            budget_id == pull(performed_action, budget),
+            budget_id == pull(performed_action, budget) & year == current_year,
             budget - pull(performed_action, cost),
             budget
           )
@@ -184,7 +192,7 @@ traditional_run <- function(assets,
     
     # Apply budgets and get both performed_actions and an updated budgets object from the results
     results <- prioritized_necessary_actions %>% 
-      apply_budget(budgets, budget_actions, skip_large)
+      apply_budget(budgets, budget_actions, current_year, skip_large)
     performed_actions <- results$performed_actions
     budgets <- results$budgets
 
