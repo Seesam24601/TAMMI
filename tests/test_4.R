@@ -83,7 +83,8 @@ rm(list = c(
   "assets",
   "asset_types",
   "asset_actions",
-  "budget",
+  "budgets",
+  "budget_actions",
   "start_year",
   "end_year"
 ))
