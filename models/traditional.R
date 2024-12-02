@@ -8,6 +8,7 @@ source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
 source(here("functions/priorities.R"))
+source(here("functions/budget_carryover.R"))
 source(here("functions/annual_adjustment.R"))
 
 
@@ -114,9 +115,9 @@ traditional_run <- function(assets,
                             necessary_actions = actions_by_age,
                             cost_adjustment = inflation,
                             priorities = prioritize_longest_wait,
+                            budget_carryover = carryover_all,
                             annual_adjustment = replace_assets,
-                            skip_large = FALSE,
-                            carryover = TRUE) {
+                            skip_large = FALSE) {
   "
   Parameters:
     assets - See docs/input_tables.md
@@ -130,6 +131,7 @@ traditional_run <- function(assets,
     necessary_actions - See docs/functions.md
     cost_adjustment - See docs/functions.md
     priorities - See docs/functions.md
+    budget_carryover - See docs/dunctions.md
     annual_adjustments - See docs/functions.md
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
       expensive action in the prioritized list of necessary actions reveals a cheaper action
@@ -159,12 +161,6 @@ traditional_run <- function(assets,
   # Assert that budget dataframe meets its requirements
   # This will be updated to reflect the new budgets and budget_actions tables in the future
   # test_budget(budget, start_year, end_year)
-
-  # Warn users if both skip_large and carryover are set to TRUE
-  warning_message <- "Both skip_large and carryover are set to TRUE"
-  if (skip_large & carryover) {
-    warning(warning_message, call. = FALSE)
-  }
 
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
@@ -207,21 +203,6 @@ traditional_run <- function(assets,
         
         subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
 
-      # Carry over left over budget if carryover is TRUE
-      # This needs to be updated to use the new multiple budget system
-      # That will be completed at a later date
-      # if (carryover) {
-
-      #   # Calculate the amount of left over budget
-      #   left_over_budget <- current_budget - actions[[current_year]] %>% 
-      #     summarize(total_cost = sum(cost, na.rm = TRUE)) %>% 
-      #     pull(total_cost)
-
-      #   # Update the budget for the next year with the leftovers
-      #   budget <- budget %>% 
-      #     mutate(budget = if_else(year == current_year + 1, budget + left_over_budget, budget))
-      # }
-
       # Perform annual adjustments
       assets <- annual_adjustment_wrapper(annual_adjustment,
                                           assets, 
@@ -231,9 +212,11 @@ traditional_run <- function(assets,
                                           current_year)
       
     }
-  }
 
-  # print(actions)
+    # Carryover leftover money from one year to the next in budgets where applicable
+    budgets <- budget_carryover(budgets, current_year, end_year)
+
+  }
 
   # Combine all years worth of replacements into a single dataframe
   do.call(bind_rows, actions)
