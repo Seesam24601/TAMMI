@@ -33,6 +33,8 @@ apply_budget <- function(prioritized_necessary_actions,
   # After every necessary action has been considered, this vector will be row binded into a single tibble
   performed_actions <- list()
 
+  # print(prioritized_necessary_actions)
+
   # Loop through every necessary action
   for (i in 1:nrow(prioritized_necessary_actions)){
 
@@ -85,19 +87,10 @@ apply_budget <- function(prioritized_necessary_actions,
   
   # Combine all performed_actions into a single tibble that is returned
   # Also return the budgets tibble as it has been updated with the current budget values
-  # The if statement is to avoid calling do.call on an empty list
-  if (length(performed_actions) == 0) {
-    list(
-      performed_actions = performed_actions, 
-      budgets = budgets
-    )
-  } else {
-    list(
-      performed_actions = do.call(bind_rows, performed_actions), 
-      budgets = budgets
-    )
-  }
-
+  list(
+    performed_actions = do.call(bind_rows, performed_actions), 
+    budgets = budgets
+  )
 
 }
 
@@ -232,6 +225,8 @@ traditional_run <- function(assets,
     }
   }
 
+  # print(actions)
+
   # Combine all years worth of replacements into a single dataframe
-  do.call(rbind, actions)
+  do.call(bind_rows, actions)
 }

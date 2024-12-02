@@ -48,7 +48,7 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year),
-    NULL
+    tibble()
   )
 })
 

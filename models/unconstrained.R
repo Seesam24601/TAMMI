@@ -85,5 +85,5 @@ unconstrained_run <- function(assets,
   }
 
   # Combine all years worth of replacements into a single dataframe
-  do.call(rbind, actions)
+  do.call(row_bind, actions)
 }
