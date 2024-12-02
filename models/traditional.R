@@ -31,17 +31,21 @@ apply_budget <- function(prioritized_necessary_actions,
   by the additional settings like skip_large and carryover
   "
 
+  # Create a column to track whether or not a budget has a necessary action that there is not
+  # enough budget to perform this year
+  # This is used when skip_large is set to FALSE
+  budgets <- budgets %>% 
+    mutate(skip_flag = FALSE)
+
   # Create an empty vector add performed actions to
   # After every necessary action has been considered, this vector will be row binded into a single tibble
   performed_actions <- list()
 
-  # print(prioritized_necessary_actions)
-
   # Loop through every necessary action
   for (i in 1:nrow(prioritized_necessary_actions)){
 
-    # Get a single row that represents the necessary action and the budget that will be used to pay for it
-    performed_action <- prioritized_necessary_actions %>% 
+    # Get a tibble that represents the necessary action and the budgets that could be used to pay for it
+    possbile_budgets <- prioritized_necessary_actions %>% 
 
       # Only look at the asset-action combination in row i of the necessary_actions table
       filter(row_number() == i) %>% 
@@ -60,10 +64,21 @@ apply_budget <- function(prioritized_necessary_actions,
           filter(year == current_year), 
 
         by = join_by(budget_id == budget_id)
-      ) %>% 
+      )
+    
+    # Get a signle row that represents the necessary action and the budget that WILL be used to pay for it
+    performed_action <- possbile_budgets %>% 
       
-      # Only consider budgets that have another budget remaining to cover the cost of the action
-      filter(cost <= budget) %>% 
+      filter(
+        
+        # Only consider budgets that have another budget remaining to cover the cost of the action
+        cost <= budget,
+      
+        # Exclude budgets where skip_flag is TRUE (there has already been an action that budget
+        # could have funded that was skipped) when skip_large is FALSE
+        (skip_large | !skip_flag)
+
+      ) %>% 
       
       # Get the top row
       # In the future, this should use a new user-suppliable function to prioritize which budget
@@ -92,7 +107,29 @@ apply_budget <- function(prioritized_necessary_actions,
       performed_actions[[i]] <- performed_action
 
     }
+
+    # Otherwise, update skip_flag for each budget applicable to this action to be TRUE
+    else {
+
+      print(budgets)
+
+      print(possbile_budgets$budget_id)
+
+      budgets <- budgets %>% 
+        mutate(
+          skip_flag = if_else(
+            budget_id %in% possbile_budgets$budget_id,
+            TRUE,
+            skip_flag
+          )
+        )
+    }
+
   }   
+
+  # Remove skip_flag column, as it is a temporary field only necessary to implement this function
+  budgets <- budgets %>% 
+    subset(select = -skip_flag)
   
   # Combine all performed_actions into a single tibble that is returned
   # Also return the budgets tibble as it has been updated with the current budget values
@@ -136,10 +173,7 @@ traditional_run <- function(assets,
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
       expensive action in the prioritized list of necessary actions reveals a cheaper action
       that is still within budget, the algorithm will choose this approach. This should
-      not be used when carryover is also TRUE. Note that setting skip_large to TRUE may
-      be less efficient only larger datasets.
-    carryover - A boolean value. If true, then unused money in the budget for after year X
-      will be added to the budget for year X + 1. This should not be used when skip_large is TRUE
+      not be used when carryover is also TRUE.
 
   Returns:
     performed_actions - see output_tables.md 
