@@ -5,26 +5,33 @@ library(tidyverse)
 library(here)
 
 source(here("functions/preflight.R"))
-source(here("functions/necessary_actions.R"))
-source(here("functions/cost_adjustment.R"))
 source(here("functions/action_priorities.R"))
-source(here("functions/budget_carryover.R"))
 source(here("functions/annual_adjustment.R"))
+source(here("functions/budget_carryover.R"))
+source(here("functions/budget_priorities.R"))
+source(here("functions/cost_adjustment.R"))
+source(here("functions/necessary_actions.R"))
 
 
 # ---- apply_budget -----
-apply_budget <- function(prioritized_necessary_actions,
-                         budgets,
-                         budget_actions,
-                         current_year,
-                         skip_large) {
+apply_budget <- function(
+  prioritized_necessary_actions,
+  budgets,
+  budget_actions,
+  current_year,
+  budget_priorities,
+  skip_large
+) {
   "
   Parameters:
-    necessary_actions - result of joining assets, asset_types, and asset_actions (also known
+    necessary_actions - Result of joining assets, asset_types, and asset_actions (also known
       as asset_details) that has been subsetted to the necessary actions, had cost adjustments
       applied, and prioritized
-    current_budget - value of the budget for the current year; this should be integer-valued
-    skip_large - see traditional_run documentation
+    budgets - See docs/input_tables.md
+    budget_actions - See docs/input_tables.md
+    current_year - Integer value for the year being modeled                      
+    budget_priorities - See docs/functions.md
+    skip_large - See traditional_run documentation at the top of the traditional_run file
 
   Returns:
     The subset of necessary_actions that can be paid for given the current budget as constrained
@@ -80,11 +87,7 @@ apply_budget <- function(prioritized_necessary_actions,
 
       ) %>% 
       
-      # Get the top row
-      # In the future, this should use a new user-suppliable function to prioritize which budget
-      # to use. 
-      # That function should require that the result is a tibble with either 0 or 1 rows
-      slice(1)
+      budget_priorities()
     
       # It is not necessary to restrict the fields returned since that task is performed in the 
       # traditional_run function before the result is returns
@@ -138,19 +141,22 @@ apply_budget <- function(prioritized_necessary_actions,
 
 
 # ---- traditional_run ----
-traditional_run <- function(assets,
-                            asset_types,
-                            asset_actions,
-                            budgets,
-                            budget_actions,
-                            start_year,
-                            end_year,
-                            necessary_actions = actions_by_age,
-                            cost_adjustment = inflation,
-                            action_priorities = prioritize_longest_wait,
-                            budget_carryover = carryover_all,
-                            annual_adjustment = replace_assets,
-                            skip_large = FALSE) {
+traditional_run <- function(
+  assets,
+  asset_types,
+  asset_actions,
+  budgets,
+  budget_actions,
+  start_year,
+  end_year,
+  action_priorities = prioritize_longest_wait,
+  annual_adjustment = replace_assets,
+  budget_carryover = carryover_all,
+  budget_priorities = prioritize_first,
+  cost_adjustment = inflation,
+  necessary_actions = actions_by_age,
+  skip_large = FALSE
+) {
   "
   Parameters:
     assets - See docs/input_tables.md
@@ -161,11 +167,12 @@ traditional_run <- function(assets,
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
       integer value. This should >= start_year.
-    necessary_actions - See docs/functions.md
-    cost_adjustment - See docs/functions.md
     action_priorities - See docs/functions.md
-    budget_carryover - See docs/dunctions.md
-    annual_adjustments - See docs/functions.md
+    annual_adjustment - See docs/functions.md
+    budget_carryover - See docs/functions.md
+    budget_priorities - See docs/functions.md
+    cost_adjustment - See docs/dunctions.md
+    necessary_actions - See docs/functions.md
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
       expensive action in the prioritized list of necessary actions reveals a cheaper action
       that is still within budget, the algorithm will choose this approach. This should
@@ -173,7 +180,7 @@ traditional_run <- function(assets,
 
   Returns:
     performed_actions - see output_tables.md 
-  This run is constrained in the amount of spending per year by budget                      
+  This run is constrained in the amount of spending per year by budgets                      
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year
@@ -218,7 +225,7 @@ traditional_run <- function(assets,
     
     # Apply budgets and get both performed_actions and an updated budgets object from the results
     results <- prioritized_necessary_actions %>% 
-      apply_budget(budgets, budget_actions, current_year, skip_large)
+      apply_budget(budgets, budget_actions, current_year, budget_priorities, skip_large)
     performed_actions <- results$performed_actions
     budgets <- results$budgets
 
