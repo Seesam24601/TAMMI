@@ -195,9 +195,8 @@ traditional_run <- function(
   # Assert that asset_actions dataframe meets its requirements
   test_asset_actions(asset_actions, asset_types)
 
-  # Assert that budget dataframe meets its requirements
-  # This will be updated to reflect the new budgets and budget_actions tables in the future
-  # test_budget(budget, start_year, end_year)
+  # Assert that budgets dataframe meets its requirements
+  test_budgets(budgets, start_year, end_year)
 
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
