@@ -111,10 +111,6 @@ apply_budget <- function(prioritized_necessary_actions,
     # Otherwise, update skip_flag for each budget applicable to this action to be TRUE
     else {
 
-      print(budgets)
-
-      print(possbile_budgets$budget_id)
-
       budgets <- budgets %>% 
         mutate(
           skip_flag = if_else(
