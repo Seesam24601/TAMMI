@@ -7,7 +7,7 @@ library(here)
 source(here("functions/preflight.R"))
 source(here("functions/necessary_actions.R"))
 source(here("functions/cost_adjustment.R"))
-source(here("functions/priorities.R"))
+source(here("functions/action_priorities.R"))
 source(here("functions/budget_carryover.R"))
 source(here("functions/annual_adjustment.R"))
 
@@ -147,7 +147,7 @@ traditional_run <- function(assets,
                             end_year,
                             necessary_actions = actions_by_age,
                             cost_adjustment = inflation,
-                            priorities = prioritize_longest_wait,
+                            action_priorities = prioritize_longest_wait,
                             budget_carryover = carryover_all,
                             annual_adjustment = replace_assets,
                             skip_large = FALSE) {
@@ -163,7 +163,7 @@ traditional_run <- function(assets,
       integer value. This should >= start_year.
     necessary_actions - See docs/functions.md
     cost_adjustment - See docs/functions.md
-    priorities - See docs/functions.md
+    action_priorities - See docs/functions.md
     budget_carryover - See docs/dunctions.md
     annual_adjustments - See docs/functions.md
     skip_large - A boolean value. If skip_large is true, then in the case where skipping an
@@ -213,8 +213,8 @@ traditional_run <- function(assets,
       # Apply cost adjustments
       cost_adjustment_wrapper(cost_adjustment, ., current_year, start_year) %>% 
       
-      # Order based on priorities
-      priorities_wrapper(priorities, ., current_year)
+      # Order based on action_priorities
+      action_priorities_wrapper(action_priorities, ., current_year)
     
     # Apply budgets and get both performed_actions and an updated budgets object from the results
     results <- prioritized_necessary_actions %>% 

@@ -1,11 +1,13 @@
 # This file contains default options for the priorties function type
 
 
-priorities_wrapper <- function(supplied_function,
-                               necessary_actions,
-                               current_year) {
+action_priorities_wrapper <- function(
+  supplied_function,
+  necessary_actions,
+  current_year
+) {
   "
-  Enforces the requirements for the priorities function type as laid out in docs/function.md
+  Enforces the requirements for the action priorities function type as laid out in docs/function.md
   "
 
   # Create a copy of necessary_actions to use late
@@ -30,8 +32,10 @@ priorities_wrapper <- function(supplied_function,
 }
 
 
-prioritize_longest_wait <- function(necessary_actions,
-                                    current_year) {
+prioritize_longest_wait <- function(
+  necessary_actions,
+  current_year
+) {
   "
   See docs/functions.md
   "
