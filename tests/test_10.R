@@ -22,9 +22,9 @@ asset_actions <- tibble(
 )
 
 budgets <- tibble(
-  budget_id = c(0),
-  year = c(2000),
-  budget = c(100)
+  budget_id = c(0, 0),
+  year = c(2000, 2001),
+  budget = c(100, 100)
 )
 
 budget_actions <- tibble(
