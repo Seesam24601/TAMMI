@@ -33,7 +33,7 @@ This function takes the necessary actions and reorders them so that they are in 
 
 ### Requirements
 
-1. The output `necessary_actions` table must be a rearrangement of the input `necessary_actions` table/
+1. The output `necessary_actions` table must be a rearrangement of the input `necessary_actions` table
 
 ### Defaults
 
@@ -80,6 +80,25 @@ Changing this from its default may cause issues with the default `actions_by_age
 
 
 ## Budget Priorities
+
+This function choose which budget to use to pay for an action, if there are multiple possible options. Note that this function is not called when there are no possible options.
+
+### Inputs
+
+- `possible_budgets`: a subset of the `budgets` table that contains every budget that could possibly pay for the action
+
+### Outputs
+
+- A 1 row subset of the input `possible_budgets` table
+
+### Requirements
+
+1. The output must be a tibble with a single row
+2. That output must be a subset of the input `possible_budgets` table
+
+### Defaults
+
+By default this is the `prioritize_first` function. This simply returns the first record in the input `possible_budgets` table without any reordering.
 
 
 ## Cost Adjustment
