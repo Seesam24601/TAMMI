@@ -22,7 +22,7 @@ action_priorities_wrapper <- function(
   # This is acheived by sorting by all columns and then checking that the results are identical
   reference_sorted <- reference %>% arrange(across(everything()))
   result_sorted <- result %>% arrange(across(everything()))
-  error_message <- "The function supplied for priorities returned something other than a rearrangement of the input"
+  error_message <- "The function supplied for action priorities returned something other than a rearrangement of the input"
   if (!identical(reference_sorted, result_sorted)) {
     stop(error_message, call. = FALSE)
   }

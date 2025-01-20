@@ -76,6 +76,12 @@ By default, this the `replace_assets` function. This returns the `assets` table 
 Changing this from its default may cause issues with the default `actions_by_age` function for the `necessary_actions` function type. See the section on that function for details.
 
 
+## Budget Carryover
+
+
+## Budget Priorities
+
+
 ## Cost Adjustment
 
 This function updates the cost of an action. Typically, this involves making adjustments to the `cost` field from the `asset_actions` input table to take into account things like inflation or agency soft costs. In the traditional model, this is completed before the necessary actions are prioritized.

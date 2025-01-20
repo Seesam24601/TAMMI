@@ -87,7 +87,7 @@ apply_budget <- function(
 
       ) %>% 
       
-      budget_priorities()
+      budget_priorities_wrapper(budget_priorities, .)
     
       # It is not necessary to restrict the fields returned since that task is performed in the 
       # traditional_run function before the result is returns
