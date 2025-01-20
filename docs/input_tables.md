@@ -61,3 +61,13 @@ This table contains 1 row for each combination of budget and year
 | `budget_id` | A unique identifier for a budget. Note that this not a primary key as there may be multiple records for each `budget_id` corresponding to different years. However, the `budgets` table must be unique by combination of `budget` and `year` | 
 | `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. Note that not every `budget_id` must meet this requirement, but that there must be at least record for each year. This must be integer-valued. |
 | `budget` | | The maximum amount of money that can be allocated in a given year. This must be integer-valued |
+
+
+## budget_actions
+
+This table contains 1 row for each combination of budget and year. This table is used to determine which action each budget is eligible to pay for.
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `action_id` | FK | Keys into the `action_id` field of the `asset_actions` table |
+| `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table |
