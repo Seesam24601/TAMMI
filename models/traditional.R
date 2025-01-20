@@ -186,17 +186,20 @@ traditional_run <- function(
   # Assert that start_year and end_year and integers and start_year <= end_year
   year_order(start_year, end_year)
 
-  # Assert that the asset_types dataframe meets its requirements
+  # Assert that the asset_types tibble meets its requirements
   test_asset_types(asset_types)
 
-  # Assert that the assets dataframe meets its requirements
+  # Assert that the assets tibble meets its requirements
   test_assets(assets, asset_types, start_year)
 
-  # Assert that asset_actions dataframe meets its requirements
+  # Assert that asset_actions tibble meets its requirements
   test_asset_actions(asset_actions, asset_types)
 
-  # Assert that budgets dataframe meets its requirements
+  # Assert that budgets tibble meets its requirements
   test_budgets(budgets, start_year, end_year)
+
+  # Assert that budget_sctions tibble meets its requirements
+  test_budget_actions(budget_actions, budgets, asset_actions)
 
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details

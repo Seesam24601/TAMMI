@@ -252,6 +252,34 @@ test_budgets <- function(budgets, start_year, end_year) {
 }
 
 
+test_budget_actions <- function(budget_actions, budgets, asset_actions) {
+  "
+  Parameters:
+    budget_actions
+    budgets (passed preflight)
+    asset_actions (passed preflight)
+
+  Returns:
+    Nothing if budget_actions meets its assumptions. Throws an appropriate error otherwise.
+  "
+
+  
+  # Assert budget_id is in budgets
+  key_exists(budget_actions$budget_id, 
+    budgets$budget_id,
+    "budget_actions",
+    "budgets",
+    "budget_id")
+
+  # Assert action_id is in asset_actions
+  key_exists(budget_actions$action_id, 
+    asset_actions$action_id,
+    "budget_actions",
+    "asset_actions",
+    "action_id")
+}
+
+
 year_order <- function(start_year, end_year) {
   "
   Parameters:
