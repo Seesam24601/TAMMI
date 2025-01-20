@@ -229,8 +229,16 @@ test_budgets <- function(budgets, start_year, end_year) {
   # Assert required columns exists
   columns_in_df(budgets, c("budget_id", "year", "budget"), "budgets") 
 
-  # Assert budget_id column is unique
-  is_unique_col(budgets$budget_id, "budgets", "budget_id")
+  # Assert combinations of budget_id and year ar unique
+  error_message <- paste("Combinations of budget_id and year in budgets must be unique")
+
+  # Create a vector that contains each combination of budget_id and year in budgets
+  col <- paste(budgets$budget_id, budgets$year)
+  
+  # Test for uniqueness and send an error message if not
+  if(length(col) != length(unique(col))){
+    stop(error_message, call. = FALSE)
+  }
 
   # Assert there is a year value for every year between, and including, start_year and end_year
   for (current_year in start_year:end_year){
