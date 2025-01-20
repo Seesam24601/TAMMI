@@ -229,8 +229,8 @@ test_budgets <- function(budgets, start_year, end_year) {
   # Assert required columns exists
   columns_in_df(budgets, c("budget_id", "year", "budget"), "budgets") 
 
-  # Assert budget_id column is uniques
-  is_unique_col(budgetd$budget_id, "bduget", "budget_id")
+  # Assert budget_id column is unique
+  is_unique_col(budgets$budget_id, "budgets", "budget_id")
 
   # Assert there is a year value for every year between, and including, start_year and end_year
   for (current_year in start_year:end_year){
