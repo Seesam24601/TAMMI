@@ -215,10 +215,29 @@ test_asset_types <- function(asset_types) {
 }
 
 
-test_budget_years <- function(budgets, start_year, end_year) {
+test_budgets <- function(budgets) {
   "
   Parameters:
     budgets
+
+  Returns:
+    Nothing if budget meets its assumptions. Throws an appropriate error otherwise.
+  "
+
+  # Assert budget_id column exists
+  columns_in_df(budgets, "budget_id", "budgets") 
+
+  # Assert budget_id  is unique
+  is_unique_col(budgets$budget_id, "budget_id", "budget")
+  
+}
+
+
+test_budget_years <- function(budget_years, budgets, start_year, end_year) {
+  "
+  Parameters:
+    budget_years,
+    budget (passed preflight)
     start_year (passed preflight)
     end_year (passed preflight)
 
@@ -227,24 +246,31 @@ test_budget_years <- function(budgets, start_year, end_year) {
   "
 
   # Assert required columns exists
-  columns_in_df(budgets, c("budget_id", "year", "budget"), "budgets") 
+  columns_in_df(budget_years, c("budget_id", "year", "budget"), "budget_years") 
 
-  # Assert combinations of budget_id and year ar unique
-  error_message <- paste("Combinations of budget_id and year in budgets must be unique")
+  # Assert combinations of budget_id and year are unique
+  error_message <- paste("Combinations of budget_id and year in budget_years must be unique")
 
   # Create a vector that contains each combination of budget_id and year in budgets
-  col <- paste(budgets$budget_id, budgets$year)
+  col <- paste(budget_years$budget_id, budget_years$year)
   
   # Test for uniqueness and send an error message if not
   if(length(col) != length(unique(col))){
     stop(error_message, call. = FALSE)
   }
 
+  # Assert that every budget_id is present in the budgets tibble
+  key_exists(budget_years$budget_id, 
+    budgets$budget_id,
+    "budget_years",
+    "budgets",
+    "budget_id")
+
   # Assert there is a year value for every year between, and including, start_year and end_year
   for (current_year in start_year:end_year){
 
-    if (!(current_year %in% budgets$year)) {
-      error_message <- paste("The budget table is missing a year between start_year and end_year:", current_year)
+    if (!(current_year %in% budget_years$year)) {
+      error_message <- paste("The budget_years table is missing a year between start_year and end_year:", current_year)
       stop(error_message, call. = FALSE)
     }
 

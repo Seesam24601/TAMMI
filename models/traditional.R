@@ -205,7 +205,10 @@ traditional_run <- function(
   test_asset_actions(asset_actions, asset_types)
 
   # Assert that budgets tibble meets its requirements
-  test_budget_years(budget_years, start_year, end_year)
+  test_budgets(budgets)
+
+  # Assert that budget_years tibble meets its requirements
+  test_budget_years(budget_years, budgets, start_year, end_year)
 
   # Assert that budget_sctions tibble meets its requirements
   test_budget_actions(budget_actions, budgets, asset_actions)
