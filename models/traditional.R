@@ -255,17 +255,28 @@ traditional_run <- function(
         subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
 
       # Perform annual adjustments
-      assets <- annual_adjustment_wrapper(annual_adjustment,
-                                          assets, 
-                                          asset_types, 
-                                          asset_actions, 
-                                          actions[[current_year]], 
-                                          current_year)
+      assets <- annual_adjustment_wrapper(
+        annual_adjustment,
+        assets, 
+        asset_types, 
+        asset_actions, 
+        actions[[current_year]], 
+        current_year
+      )
       
     }
 
     # Carryover leftover money from one year to the next in budgets where applicable
-    budget_years <- budget_carryover(budget_years, current_year, end_year)
+
+    # Do not carryover if the current_year is the end_year because this may cause errors
+    # when trying to select certain rows from the budget_years_detailed table
+    if (current_year != end_year) {
+      budget_years <- budget_carryover_wrapper(
+        budget_carryover,
+        left_join(budget_years, budgets, join_by(budget_id)), 
+        current_year
+      )
+    }
 
   }
 

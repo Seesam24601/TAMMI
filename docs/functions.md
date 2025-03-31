@@ -78,6 +78,26 @@ Changing this from its default may cause issues with the default `actions_by_age
 
 ## Budget Carryover
 
+This function is used to determine how unspent money in each budget is moved between years. If `current_year` is `end_year`, then this function is not called
+
+### Inputs
+
+- `budget_years_detailed`: a tibble that is formed by left joining `budgets` onto `budget_years`
+- `current_year`: current year
+
+### Outputs
+
+- A version of `budget_years_detailed` where the only changes are to the `budget` field of the next yerar
+
+### Requirements
+
+1. Only the `budget` field of the next year is changed
+3. All values of the `budget` field should still be positive integer values
+
+### Default
+
+By default this is the `carryover_all` function. This carryovers all unused budget from the current year to the next. 
+
 
 ## Budget Priorities
 
