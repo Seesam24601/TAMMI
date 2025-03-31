@@ -85,7 +85,8 @@ This function choose which budget to use to pay for an action, if there are mult
 
 ### Inputs
 
-- `possible_budgets`: a table created by left joining `budgets` onto the a single record of the `asset_details` table; this table contains 1 record for each budget; the information about the assets from `asset_details` is the same in every row
+- `possible_budgets`: a tibble that is formed by inner joining `budget_actions` and `budget_years` for the current year 
+    and left joining `budgets` to a row of the `asset_details` table; this table contains 1 record for each budget; the information about the assets from `asset_details` is the same in every row
 
 ### Outputs
 

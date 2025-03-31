@@ -54,18 +54,27 @@ The `asset_details` table is not an input table, but rather one created by model
 
 ## budgets
 
+This table contains 1 row for each budget.
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table | 
+
+
+## budget_years
+
 This table contains 1 row for each combination of budget and year
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
-| `budget_id` | A unique identifier for a budget. Note that this not a primary key as there may be multiple records for each `budget_id` corresponding to different years. However, the `budgets` table must be unique by combination of `budget` and `year` | 
+| `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table | 
 | `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. Note that not every `budget_id` must meet this requirement, but that there must be at least record for each year. This must be integer-valued. |
 | `budget` | | The maximum amount of money that can be allocated in a given year. This must be integer-valued |
 
 
 ## budget_actions
 
-This table contains 1 row for each combination of budget and year. This table is used to determine which action each budget is eligible to pay for.
+This table contains 1 row for each budget and an action that can be funded with that budget. This table is used to determine which action each budget is eligible to pay for.
 
 | Field | Code | Description |
 | ---- | ---- | ---- |

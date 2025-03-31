@@ -46,8 +46,8 @@ prioritize_first <- function(
 ){
   "
   Parameters:
-    possible_budgets - A tibble that is formed by left joining budget_actions, and then budgets to a row
-      of the asset_details table
+    possible_budgets - A tibble that is formed by inner joining budget_actions and budget_years for the current year,
+      and left joining budgets to a row of the asset_details table
 
   Returns:
     The first row of possible_budgets

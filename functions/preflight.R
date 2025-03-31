@@ -215,7 +215,7 @@ test_asset_types <- function(asset_types) {
 }
 
 
-test_budgets <- function(budgets, start_year, end_year) {
+test_budget_years <- function(budgets, start_year, end_year) {
   "
   Parameters:
     budgets

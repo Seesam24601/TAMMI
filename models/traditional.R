@@ -17,6 +17,7 @@ source(here("functions/necessary_actions.R"))
 apply_budget <- function(
   prioritized_necessary_actions,
   budgets,
+  budget_years,
   budget_actions,
   current_year,
   budget_priorities,
@@ -28,6 +29,7 @@ apply_budget <- function(
       as asset_details) that has been subsetted to the necessary actions, had cost adjustments
       applied, and prioritized
     budgets - See docs/input_tables.md
+    budget_years - See docs/input_tables.md
     budget_actions - See docs/input_tables.md
     current_year - Integer value for the year being modeled                      
     budget_priorities - See docs/functions.md
@@ -41,7 +43,7 @@ apply_budget <- function(
   # Create a column to track whether or not a budget has a necessary action that there is not
   # enough budget to perform this year
   # This is used when skip_large is set to FALSE
-  budgets <- budgets %>% 
+  budget_years <- budget_years %>% 
     mutate(skip_flag = FALSE)
 
   # Create an empty vector add performed actions to
@@ -61,17 +63,21 @@ apply_budget <- function(
       # I considered performing this line outside the loop, as it should be more performant,
       # but doing so makes iterating over the asset-action combinations more complicated
       # In the future, changing this may be worth it if performance is a problem
-      inner_join(budget_actions, by = join_by(action_id == action_id)) %>% 
+      inner_join(budget_actions, by = join_by(action_id)) %>% 
       
       # Get the current value in each budget
       inner_join(
 
         # Only look at the current year of budgets
-        budgets %>% 
+        budget_years %>% 
           filter(year == current_year), 
 
-        by = join_by(budget_id == budget_id)
-      )
+        by = join_by(budget_id)
+      ) %>% 
+      
+      # Left join budgets table in case there is information at the budget level that someone wans to filter
+      # by in budget_priorities
+      left_join(budgets, by = join_by(budget_id))
     
     # Get a signle row that represents the necessary action and the budget that WILL be used to pay for it
     performed_action <- possbile_budgets %>% 
@@ -97,7 +103,7 @@ apply_budget <- function(
     if (nrow(performed_action) == 1){
       
       # Remove that cost from the current_year of the correct budget
-      budgets <- budgets %>% 
+      budget_years <- budget_years %>% 
         mutate(
           budget = if_else(
             budget_id == pull(performed_action, budget) & year == current_year,
@@ -114,7 +120,7 @@ apply_budget <- function(
     # Otherwise, update skip_flag for each budget applicable to this action to be TRUE
     else {
 
-      budgets <- budgets %>% 
+      budget_years <- budget_years %>% 
         mutate(
           skip_flag = if_else(
             budget_id %in% possbile_budgets$budget_id,
@@ -127,14 +133,14 @@ apply_budget <- function(
   }   
 
   # Remove skip_flag column, as it is a temporary field only necessary to implement this function
-  budgets <- budgets %>% 
+  budget_years <- budget_years %>% 
     subset(select = -skip_flag)
   
   # Combine all performed_actions into a single tibble that is returned
   # Also return the budgets tibble as it has been updated with the current budget values
   list(
     performed_actions = do.call(bind_rows, performed_actions), 
-    budgets = budgets
+    budget_years = budget_years
   )
 
 }
@@ -146,6 +152,7 @@ traditional_run <- function(
   asset_types,
   asset_actions,
   budgets,
+  budget_years,
   budget_actions,
   start_year,
   end_year,
@@ -162,7 +169,9 @@ traditional_run <- function(
     assets - See docs/input_tables.md
     asset_types - See docs/input_tables.md
     asset_actions - See docs/input_tables.md
-    budget - See docs/input_table.md
+    budgets - See docs/input_table.md
+    budget_years - See docs/input_table.md
+    budget_Actions - See docs/input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -196,7 +205,7 @@ traditional_run <- function(
   test_asset_actions(asset_actions, asset_types)
 
   # Assert that budgets tibble meets its requirements
-  test_budgets(budgets, start_year, end_year)
+  test_budget_years(budget_years, start_year, end_year)
 
   # Assert that budget_sctions tibble meets its requirements
   test_budget_actions(budget_actions, budgets, asset_actions)
@@ -227,9 +236,9 @@ traditional_run <- function(
     
     # Apply budgets and get both performed_actions and an updated budgets object from the results
     results <- prioritized_necessary_actions %>% 
-      apply_budget(budgets, budget_actions, current_year, budget_priorities, skip_large)
+      apply_budget(budgets, budget_years, budget_actions, current_year, budget_priorities, skip_large)
     performed_actions <- results$performed_actions
-    budgets <- results$budgets
+    budget_years <- results$budget_years
 
     # Skip the following steps if there are no performed_actions
     if (length(performed_actions) > 0) {
@@ -253,7 +262,7 @@ traditional_run <- function(
     }
 
     # Carryover leftover money from one year to the next in budgets where applicable
-    budgets <- budget_carryover(budgets, current_year, end_year)
+    budget_years <- budget_carryover(budget_years, current_year, end_year)
 
   }
 
