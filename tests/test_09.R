@@ -22,6 +22,10 @@ asset_actions <- tibble(
 )
 
 budgets <- tibble(
+  budget_id = c(0)
+)
+
+budget_years <- tibble(
   budget_id = c(0),
   year = c(2000),
   budget = c(50)
@@ -47,6 +51,7 @@ test_that(test_name, {
       asset_types, 
       asset_actions, 
       budgets,
+      budget_years,
       budget_actions,
       start_year, 
       end_year,
@@ -59,6 +64,7 @@ test_that(test_name, {
       asset_types, 
       asset_actions, 
       budgets,
+      budget_years,
       budget_actions,
       start_year, 
       end_year,
@@ -84,6 +90,7 @@ rm(list = c(
   "asset_types",
   "asset_actions",
   "budgets",
+  "budget_years",
   "budget_actions",
   "start_year",
   "end_year"
