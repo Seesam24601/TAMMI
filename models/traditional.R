@@ -281,12 +281,9 @@ traditional_run <- function(
 
   }
 
-  # Combine all years worth of replacements into a single dataframe
-  performed_actions <- do.call(bind_rows, actions)
-
   # Create a single object with all the results
   result <- list(
-    performed_actions = performed_actions
+    performed_actions = do.call(bind_rows, actions)
   )
 
   class(result) <- "traditional_tammi_model"

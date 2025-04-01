@@ -84,12 +84,9 @@ unconstrained_run <- function(assets,
                                         current_year)
   }
 
-  # Combine all years worth of replacements into a single dataframe
-  performed_actions <- do.call(bind_rows, actions)
-
   # Create a single object with all the results
   result <- list(
-    performed_actions = performed_actions
+    performed_actions = do.call(bind_rows, actions)
   )
 
   class(result) <- "unconstrained_tammi_model"
