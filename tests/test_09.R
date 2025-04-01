@@ -1,4 +1,4 @@
-test_name = "Test 10: Constrained budget with non-replacement action"
+test_name = "Test 9: Skip large"
 
 
 # ---- Inputs ----
@@ -6,7 +6,7 @@ test_name = "Test 10: Constrained budget with non-replacement action"
 assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
-  year_built = c(1995)
+  year_built = c(1990)
 )
 
 asset_types <- tibble(
@@ -17,7 +17,7 @@ asset_actions <- tibble(
   action_id = c(0, 1),
   asset_type_id = c(0, 0),
   age_trigger = c(5, 10),
-  cost = c(100, 500),
+  cost = c(100, 50),
   replacement_flag = c(0, 1)
 )
 
@@ -26,9 +26,9 @@ budgets <- tibble(
 )
 
 budget_years <- tibble(
-  budget_id = c(0, 0),
-  year = c(2000, 2001),
-  budget = c(100, 100)
+  budget_id = c(0),
+  year = c(2000),
+  budget = c(50)
 )
 
 budget_actions <- tibble(
@@ -36,23 +36,13 @@ budget_actions <- tibble(
   budget_id = c(0, 0)
 )
 
-# Choose 2001 here to catch the error when non-replacement actions are duplcated for the 
-# same asset
-# Do not go all the way to 2005 as in test 5 because we don't need to test carryover here
 start_year <- 2000
-end_year <- 2001
-
-# Dummy function to ignore inflation
-cost_adjustment_dummy <- function(
-  asset_details,
-  current_year,
-  start_year
-) {
-  asset_details
-}
+end_year <- 2000
 
 
 # ---- Test -----
+
+# Note that skip_large is FALSE by default
 
 test_that(test_name, {
   expect_equal(
@@ -64,15 +54,28 @@ test_that(test_name, {
       budget_years,
       budget_actions,
       start_year, 
-      end_year, 
-      cost_adjustment = cost_adjustment_dummy),
+      end_year,
+      skip_large = FALSE),
+    tibble()
+  )
+  expect_equal(
+    traditional_run(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budgets,
+      budget_years,
+      budget_actions,
+      start_year, 
+      end_year,
+      skip_large = TRUE),
     tibble(
       year = c(2000),
       asset_id = c(0),
       asset_type_id = c(0),
-      action_id = c(0),
+      action_id = c(1),
       budget_id = c(0),
-      cost = c(100)
+      cost = c(50)
     )
   )
 })

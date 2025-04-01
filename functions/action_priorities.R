@@ -1,11 +1,13 @@
 # This file contains default options for the priorties function type
 
 
-priorities_wrapper <- function(supplied_function,
-                               necessary_actions,
-                               current_year) {
+action_priorities_wrapper <- function(
+  supplied_function,
+  necessary_actions,
+  current_year
+) {
   "
-  Enforces the requirements for the priorities function type as laid out in docs/function.md
+  Enforces the requirements for the action priorities function type as laid out in docs/function.md
   "
 
   # Create a copy of necessary_actions to use late
@@ -20,7 +22,7 @@ priorities_wrapper <- function(supplied_function,
   # This is acheived by sorting by all columns and then checking that the results are identical
   reference_sorted <- reference %>% arrange(across(everything()))
   result_sorted <- result %>% arrange(across(everything()))
-  error_message <- "The function supplied for priorities returned something other than a rearrangement of the input"
+  error_message <- "The function supplied for action priorities returned something other than a rearrangement of the input"
   if (!identical(reference_sorted, result_sorted)) {
     stop(error_message, call. = FALSE)
   }
@@ -30,8 +32,10 @@ priorities_wrapper <- function(supplied_function,
 }
 
 
-prioritize_longest_wait <- function(necessary_actions,
-                                    current_year) {
+prioritize_longest_wait <- function(
+  necessary_actions,
+  current_year
+) {
   "
   See docs/functions.md
   "

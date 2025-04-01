@@ -27,7 +27,7 @@ This table contains 1 row for every action. An action is a capital cost associat
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
-| `asset_action_id` | PK | |
+| `action_id` | PK | |
 | `asset_type_id` | FK | The asset_type that this action applies to. Actions can only apply to a single asset_type. This keys into `asset_type_id` in the `asset_types` table. |
 | `cost` | | The cost of the action. This must be integer-valued. |
 | `replacement_flag` | | 1 if the action is a replacement; 0 otherwise. Replacements differ from other actions in that replacements update the year_built field of the asset. Once an asset is replaced, it can receive non-replacement actions that it has previously received again. |
@@ -52,11 +52,31 @@ The `asset_details` table is not an input table, but rather one created by model
 `asset_details` has one record for each combination of asset and an action that can be applied to that asset. Any function that references the `asset_details` table has access to any field in the `assets`, `asset_types`, and `asset_actions` tables.
 
 
-## budget
+## budgets
 
-This table contains 1 row for every year.
+This table contains 1 row for each budget.
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
-| `year` | PK | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. This must be integer-valued. |
+| `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table | 
+
+
+## budget_years
+
+This table contains 1 row for each combination of budget and year
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table | 
+| `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. Note that not every `budget_id` must meet this requirement, but that there must be at least record for each year. This must be integer-valued. |
 | `budget` | | The maximum amount of money that can be allocated in a given year. This must be integer-valued |
+
+
+## budget_actions
+
+This table contains 1 row for each budget and an action that can be funded with that budget. This table is used to determine which action each budget is eligible to pay for.
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `action_id` | FK | Keys into the `action_id` field of the `asset_actions` table |
+| `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table |

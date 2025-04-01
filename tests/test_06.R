@@ -1,4 +1,4 @@
-test_name = "Test 5: 2 asset actions"
+test_name = "Test 6: Inflation"
 
 
 # ---- Inputs ----
@@ -6,7 +6,7 @@ test_name = "Test 5: 2 asset actions"
 assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
-  year_built = c(1995)
+  year_built = c(1990)
 )
 
 asset_types <- tibble(
@@ -14,29 +14,30 @@ asset_types <- tibble(
 )
 
 asset_actions <- tibble(
-  asset_action_id = c(0, 1),
-  asset_type_id = c(0, 0),
-  age_trigger = c(5, 10),
-  cost = c(100, 500),
-  replacement_flag = c(0, 1)
+  action_id = c(0),
+  asset_type_id = c(0),
+  age_trigger = c(5),
+  cost = c(100),
+  replacement_flag = c(1)
 )
 
-budget <- tibble(
+budgets <- tibble(
+  budget_id = c(0)
+)
+
+budget_years <- tibble(
+  budget_id = rep(0),
   year = 2000:2005,
   budget = rep(1000)
 )
 
+budget_actions <- tibble(
+  action_id = c(0),
+  budget_id = c(0)
+)
+
 start_year <- 2000
 end_year <- 2005
-
-# Dummy function to ignore inflation
-cost_adjustment_dummy <- function(
-  asset_details,
-  current_year,
-  start_year
-) {
-  asset_details
-}
 
 
 # ---- Test -----
@@ -48,32 +49,35 @@ test_that(test_name, {
       asset_types, 
       asset_actions, 
       start_year, 
-      end_year, 
-      cost_adjustment = cost_adjustment_dummy),
+      end_year),
     tibble(
       year = c(2000, 2005),
       asset_id = c(0, 0),
       asset_type_id = c(0, 0),
-      asset_action_id = c(0, 1),
-      cost = c(100, 500)
-    )
+      action_id = c(0, 0),
+      cost = c(100, 116)
+    ),
+    tolerance = 0.001
   )
   expect_equal(
     traditional_run(
       assets, 
       asset_types, 
       asset_actions, 
-      budget,
+      budgets,
+      budget_years,
+      budget_actions,
       start_year, 
-      end_year, 
-      cost_adjustment = cost_adjustment_dummy),
+      end_year),
     tibble(
       year = c(2000, 2005),
       asset_id = c(0, 0),
       asset_type_id = c(0, 0),
-      asset_action_id = c(0, 1),
-      cost = c(100, 500)
-    )
+      action_id = c(0, 0),
+      budget_id = c(0, 0),
+      cost = c(100, 116)
+    ),
+    tolerance = 0.001
   )
 })
 
@@ -86,7 +90,9 @@ rm(list = c(
   "assets",
   "asset_types",
   "asset_actions",
-  "budget",
+  "budgets",
+  "budget_years",
+  "budget_actions",
   "start_year",
   "end_year"
 ))

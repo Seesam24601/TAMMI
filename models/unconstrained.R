@@ -73,7 +73,7 @@ unconstrained_run <- function(assets,
       # Add the year of the replacement as a column
       mutate(year = current_year) %>% 
       
-      subset(select = c(year, asset_id, asset_type_id, asset_action_id, cost))
+      subset(select = c(year, asset_id, asset_type_id, action_id, cost))
 
     # Perform annual adjustments
     assets <- annual_adjustment_wrapper(annual_adjustment,
@@ -85,5 +85,5 @@ unconstrained_run <- function(assets,
   }
 
   # Combine all years worth of replacements into a single dataframe
-  do.call(rbind, actions)
+  do.call(bind_rows, actions)
 }

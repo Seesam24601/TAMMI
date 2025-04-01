@@ -1,4 +1,4 @@
-test_name = "Test 8: Carryover"
+test_name = "Test 5: 2 asset actions"
 
 
 # ---- Inputs ----
@@ -6,7 +6,7 @@ test_name = "Test 8: Carryover"
 assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
-  year_built = c(1990)
+  year_built = c(1995)
 )
 
 asset_types <- tibble(
@@ -14,20 +14,30 @@ asset_types <- tibble(
 )
 
 asset_actions <- tibble(
-  asset_action_id = c(0),
-  asset_type_id = c(0),
-  age_trigger = c(5),
-  cost = c(100),
-  replacement_flag = c(1)
+  action_id = c(0, 1),
+  asset_type_id = c(0, 0),
+  age_trigger = c(5, 10),
+  cost = c(100, 500),
+  replacement_flag = c(0, 1)
 )
 
-budget <- tibble(
-  year = 2000:2001,
-  budget = rep(50)
+budgets <- tibble(
+  budget_id = c(0)
+)
+
+budget_years <- tibble(
+  budget_id = rep(0),
+  year = 2000:2005,
+  budget = rep(1000)
+)
+
+budget_actions <- tibble(
+  action_id = c(0, 1),
+  budget_id = c(0, 0)
 )
 
 start_year <- 2000
-end_year <- 2001
+end_year <- 2005
 
 # Dummy function to ignore inflation
 cost_adjustment_dummy <- function(
@@ -43,20 +53,19 @@ cost_adjustment_dummy <- function(
 
 test_that(test_name, {
   expect_equal(
-    traditional_run(
+    unconstrained_run(
       assets, 
       asset_types, 
       asset_actions, 
-      budget,
       start_year, 
-      end_year,
+      end_year, 
       cost_adjustment = cost_adjustment_dummy),
     tibble(
-      year = c(2001),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      asset_action_id = c(0),
-      cost = c(100)
+      year = c(2000, 2005),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      action_id = c(0, 1),
+      cost = c(100, 500)
     )
   )
   expect_equal(
@@ -64,19 +73,21 @@ test_that(test_name, {
       assets, 
       asset_types, 
       asset_actions, 
-      budget,
+      budgets,
+      budget_years,
+      budget_actions,
       start_year, 
-      end_year,
-      carryover = FALSE,
+      end_year, 
       cost_adjustment = cost_adjustment_dummy),
     tibble(
-      year = numeric(0),
-      asset_id = numeric(0),
-      asset_type_id = numeric(0),
-      asset_action_id = numeric(0),
-      cost = numeric(0)
+      year = c(2000, 2005),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      action_id = c(0, 1),
+      budget_id = c(0, 0),
+      cost = c(100, 500)
     )
-)
+  )
 })
 
 
@@ -88,7 +99,9 @@ rm(list = c(
   "assets",
   "asset_types",
   "asset_actions",
-  "budget",
+  "budgets",
+  "budget_years",
+  "budget_actions",
   "start_year",
   "end_year"
 ))

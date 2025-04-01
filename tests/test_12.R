@@ -1,4 +1,4 @@
-test_name = "Test 10: Constrained budget with non-replacement action"
+test_name = "Test 12: 2 budgets, each assigned to a different action"
 
 
 # ---- Inputs ----
@@ -22,25 +22,22 @@ asset_actions <- tibble(
 )
 
 budgets <- tibble(
-  budget_id = c(0)
+  budget_id = c(0, 1)
 )
 
 budget_years <- tibble(
-  budget_id = c(0, 0),
-  year = c(2000, 2001),
-  budget = c(100, 100)
+  budget_id = c(rep(0, 6), rep(1, 6)),
+  year = c(2000:2005, 2000:2005),
+  budget = rep(1000)
 )
 
 budget_actions <- tibble(
   action_id = c(0, 1),
-  budget_id = c(0, 0)
+  budget_id = c(0, 1)
 )
 
-# Choose 2001 here to catch the error when non-replacement actions are duplcated for the 
-# same asset
-# Do not go all the way to 2005 as in test 5 because we don't need to test carryover here
 start_year <- 2000
-end_year <- 2001
+end_year <- 2005
 
 # Dummy function to ignore inflation
 cost_adjustment_dummy <- function(
@@ -67,12 +64,12 @@ test_that(test_name, {
       end_year, 
       cost_adjustment = cost_adjustment_dummy),
     tibble(
-      year = c(2000),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      action_id = c(0),
-      budget_id = c(0),
-      cost = c(100)
+      year = c(2000, 2005),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      action_id = c(0, 1),
+      budget_id = c(0, 1),
+      cost = c(100, 500)
     )
   )
 })
