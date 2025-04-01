@@ -1,12 +1,13 @@
 # This file contains the default options for the budget_carryover function type
 
-# Note to self. Cannot use budget_years_detailed because it creates weird duplicating behavior when resent to budget_years
+# Note to self. Cannot use budget_years because it creates weird duplicating behavior when resent to budget_years
 # Must correct
 
 
 budget_carryover_wrapper <- function(
   supplied_function,
-  budget_years_detailed,
+  budgets,
+  budget_years,
   current_year
 ) {
   "
@@ -14,10 +15,14 @@ budget_carryover_wrapper <- function(
   "
 
   # Create a copy of possible_budgets to use late
-  reference <- budget_years_detailed
+  reference <- budget_years
 
   # Run function
-  result <- supplied_function(budget_years_detailed, current_year)
+  result <- supplied_function(
+    budgets,
+    budget_years, 
+    current_year
+  )
 
   # Assert that only the budget field for the current year changed
   # Create a temproary field to avoid comparing the budget in the year that has changed
@@ -32,16 +37,20 @@ budget_carryover_wrapper <- function(
   result <- result %>% 
     subset(select = -budget_modified)
 
-  # Assert that the budgets field of the result is integer-valued
-  is_integer(result$budget, "The budget field of the result of function supplied for budget carryover")
-  
+  # Assert that the budgets field of the result is  numeic
+  error_message <- "The budget field of the result of function supplied for budget carryover must be a numeric values"
+  if (class(budget_years$budget) != "numeric") {
+    stop(error_message, call. = FALSE)
+  }
+    
   # Return Result
   result
 }
 
 
 carryover_all <- function(
-  budget_years_detailed,
+  budgets,
+  budget_years,
   current_year
 ) {
   "
@@ -49,11 +58,11 @@ carryover_all <- function(
   "
 
   # For the each budget, add any money remaining in current_year to current_year + 1
-  budget_years_detailed %>% 
+  budget_years %>% 
     mutate(
       budget = if_else(
         year == current_year + 1,
-        budget + budget_years_detailed %>%
+        budget + budget_years %>%
           filter(
             budget_id == budget_id,
             year == current_year

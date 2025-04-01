@@ -82,17 +82,18 @@ This function is used to determine how unspent money in each budget is moved bet
 
 ### Inputs
 
-- `budget_years_detailed`: a tibble that is formed by left joining `budgets` onto `budget_years`
+- `budges` table
+- `budget_years` table
 - `current_year`: current year
 
 ### Outputs
 
-- A version of `budget_years_detailed` where the only changes are to the `budget` field of the next yerar
+- A version of `budget_years` where the only changes are to the `budget` field of the next yerar
 
 ### Requirements
 
 1. Only the `budget` field of the next year is changed
-3. All values of the `budget` field should still be positive integer values
+3. All values of the `budget` field should still numeric values
 
 ### Default
 

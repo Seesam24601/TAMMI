@@ -273,7 +273,8 @@ traditional_run <- function(
     if (current_year != end_year) {
       budget_years <- budget_carryover_wrapper(
         budget_carryover,
-        left_join(budget_years, budgets, join_by(budget_id)), 
+        budgets,
+        budget_years,
         current_year
       )
     }
