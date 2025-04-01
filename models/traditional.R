@@ -189,6 +189,7 @@ traditional_run <- function(
 
   Returns:
     performed_actions - see output_tables.md 
+    backlog - see output_tables.md
   This run is constrained in the amount of spending per year by budgets                      
   "
   
@@ -216,6 +217,7 @@ traditional_run <- function(
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
+  backlog <- list()
   for (current_year in start_year:end_year){
 
     # Left join asset_types and asset_actions on to assets
@@ -253,6 +255,15 @@ traditional_run <- function(
         mutate(year = current_year) %>% 
         
         subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
+      
+      # Get backlog for the current year as all necessary actions that were not performed
+      backlog[[current_year]] <- prioritized_necessary_actions %>% 
+
+        # Get all actions that were not performed
+        anti_join(performed_actions) %>% 
+        
+        mutate(year = current_year) %>% 
+        subset(select = c(year, asset_id, asset_type_id, action_id, cost))
 
       # Perform annual adjustments
       assets <- annual_adjustment_wrapper(
@@ -283,7 +294,8 @@ traditional_run <- function(
 
   # Create a single object with all the results
   result <- list(
-    performed_actions = do.call(bind_rows, actions)
+    performed_actions = do.call(bind_rows, actions),
+    backlog = do.call(bind_rows, backlog)
   )
 
   class(result) <- "traditional_tammi_model"
