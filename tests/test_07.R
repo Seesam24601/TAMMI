@@ -52,7 +52,8 @@ test_that(test_name, {
       budget_years,
       budget_actions,
       start_year, 
-      end_year),
+      end_year
+    )$performed_actions,
     tibble()
   )
 })

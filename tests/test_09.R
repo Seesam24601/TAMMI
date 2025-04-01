@@ -55,7 +55,8 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      skip_large = FALSE),
+      skip_large = FALSE
+    )$performed_actions,
     tibble()
   )
   expect_equal(
@@ -68,7 +69,8 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      skip_large = TRUE),
+      skip_large = TRUE
+    )$performed_actions,
     tibble(
       year = c(2000),
       asset_id = c(0),
