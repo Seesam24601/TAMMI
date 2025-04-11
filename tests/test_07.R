@@ -56,6 +56,25 @@ test_that(test_name, {
     )$performed_actions,
     tibble()
   )
+  expect_equal(
+    traditional_run(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budgets,
+      budget_years,
+      budget_actions,
+      start_year, 
+      end_year
+    )$backlog,
+    tibble(
+      year = c(2000),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      action_id = c(0),
+      cost = c(100)
+    )
+  )
 })
 
 

@@ -69,6 +69,26 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
+      skip_large = FALSE
+    )$backlog,
+    tibble(
+      year = c(2000, 2000),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      action_id = c(0, 1),
+      cost = c(100, 50)
+    )
+  )
+  expect_equal(
+    traditional_run(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budgets,
+      budget_years,
+      budget_actions,
+      start_year, 
+      end_year,
       skip_large = TRUE
     )$performed_actions,
     tibble(
@@ -78,6 +98,26 @@ test_that(test_name, {
       action_id = c(1),
       budget_id = c(0),
       cost = c(50)
+    )
+  )
+  expect_equal(
+    traditional_run(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budgets,
+      budget_years,
+      budget_actions,
+      start_year, 
+      end_year,
+      skip_large = TRUE
+    )$backlog,
+    tibble(
+      year = c(2000),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      action_id = c(0),
+      cost = c(100)
     )
   )
 })
