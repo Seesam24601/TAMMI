@@ -14,7 +14,7 @@ backlog_seek <- function(
   assets,
   asset_types,
   asset_actions,
-  sought_backlog,
+  backlog_sought,
   start_year,
   end_year,
   action_priorities = prioritize_longest_wait,
@@ -27,7 +27,7 @@ backlog_seek <- function(
     assets - See docs/input_tables.md
     asset_types - See docs/input_tables.md
     asset_actions - See docs/input_tables.md
-    sought_backlog - See docs/input_table.md
+    backlog_sought - See docs/input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -53,10 +53,11 @@ backlog_seek <- function(
   # Assert that the assets tibble meets its requirements
   test_assets(assets, asset_types, start_year)
 
-  # Assert that asset_actions tibble meets its requirements
+  # Assert that the asset_actions tibble meets its requirements
   test_asset_actions(asset_actions, asset_types)
 
-  # Placeholder for backlog preflight
+  # Assert that the backlog_sought tibble meets its requirements
+  test_backlog_sought(backlog_sought, start_year, end_year)
 
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
@@ -90,7 +91,7 @@ backlog_seek <- function(
     # Perform actions up to the point where the backlog for the year is below the value 
     # specified in the backlog table
     performed_actions <- prioritized_necessary_actions %>% 
-      filter(backlog_cost >= sought_backlog %>%
+      filter(backlog_cost >= backlog_sought %>%
           filter(year == current_year) %>% 
           pull(backlog)
         ) %>% 
