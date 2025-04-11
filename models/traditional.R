@@ -1,5 +1,4 @@
-# This file contains the traditional_run function
-# This file is tested by tests/traditional_test.R
+# This file contains the traditional model
 
 library(tidyverse)
 library(here)
@@ -146,8 +145,8 @@ apply_budget <- function(
 }
 
 
-# ---- traditional_run ----
-traditional_run <- function(
+# ---- traditional ----
+traditional <- function(
   assets,
   asset_types,
   asset_actions,

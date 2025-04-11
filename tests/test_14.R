@@ -1,5 +1,4 @@
-test_name = "Test 7: Constrained budget"
-
+test_name = "Test 14: Simplest backlog seek"
 
 # ---- Inputs ----
 
@@ -21,19 +20,9 @@ asset_actions <- tibble(
   replacement_flag = c(1)
 )
 
-budgets <- tibble(
-  budget_id = c(0)
-)
-
-budget_years <- tibble(
-  budget_id = c(0),
+backlog_sought <- tibble(
   year = c(2000),
-  budget = c(50)
-)
-
-budget_actions <- tibble(
-  action_id = c(0),
-  budget_id = c(0)
+  backlog = c(0)
 )
 
 start_year <- 2000
@@ -44,29 +33,14 @@ end_year <- 2000
 
 test_that(test_name, {
   expect_equal(
-    traditional(
+    backlog_seek(
       assets, 
       asset_types, 
       asset_actions, 
-      budgets,
-      budget_years,
-      budget_actions,
+      backlog_sought,
       start_year, 
       end_year
     )$performed_actions,
-    tibble()
-  )
-  expect_equal(
-    traditional(
-      assets, 
-      asset_types, 
-      asset_actions, 
-      budgets,
-      budget_years,
-      budget_actions,
-      start_year, 
-      end_year
-    )$backlog,
     tibble(
       year = c(2000),
       asset_id = c(0),
@@ -86,9 +60,7 @@ rm(list = c(
   "assets",
   "asset_types",
   "asset_actions",
-  "budgets",
-  "budget_years",
-  "budget_actions",
+  "backlog_sought",
   "start_year",
   "end_year"
 ))

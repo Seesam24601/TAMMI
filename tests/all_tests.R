@@ -8,6 +8,7 @@ library(testthat)
 # Load models
 source(here("models/unconstrained.R"))
 source(here("models/traditional.R"))
+source(here("models/backlog_seek.R"))
 
 # Get all unit tests
 unit_tests <- list.files(path = here("tests"), pattern = "^test.*\\.R$", full.names = TRUE)
