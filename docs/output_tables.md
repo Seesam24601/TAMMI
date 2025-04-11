@@ -1,7 +1,7 @@
 # Output Tables
 
 
-# performed_actions
+## performed_actions
 
 This table contains one record for every replacement action necessary to maintain a state of good repair. 
 
@@ -15,7 +15,7 @@ This table contains one record for every replacement action necessary to maintai
 | `cost` | | The cost of the action. This is calculated by applying the `cost_adjustment` function to at year to the `cost` column in `asset_actions`. |
 
 
-# backlog
+## backlog
 
 This table contains one record for every year where an action for an asset was deemed necessary, but was not ultimately funded. Note that this output cannot be pulled from the unconstrained model because in that model all necessary actions are funded
 

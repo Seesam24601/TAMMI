@@ -52,9 +52,19 @@ The `asset_details` table is not an input table, but rather one created by model
 `asset_details` has one record for each combination of asset and an action that can be applied to that asset. Any function that references the `asset_details` table has access to any field in the `assets`, `asset_types`, and `asset_actions` tables.
 
 
+## backlog_sought
+
+This table contains 1 row for each year and the desired value for the backlog in that year
+
+| Field | Code | Description |
+| ---- | ---- | ---- |
+| `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. This must be integer-valued. |
+| `backlog` | | The value of the backlog desired for that year. This must be integer-valued. |
+
+
 ## budgets
 
-This table contains 1 row for each budget.
+This table contains 1 row for each budget
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
