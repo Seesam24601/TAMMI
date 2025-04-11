@@ -84,14 +84,14 @@ backlog_seek <- function(
       # Order based on action_priorities
       action_priorities_wrapper(action_priorities, ., current_year) %>% 
       
-      # Get the total cost of the backlog if the current record is the last action that
-      # is funded
-      mutate(backlog_cost = lag(rev(cumsum(rev(cost))), default = 0))
+      # Get the total cost of the backlog if the current record is the 
+      # first unfunded action
+      mutate(backlog_cost = rev(cumsum(rev(cost))), default = 0)
     
     # Perform actions up to the point where the backlog for the year is below the value 
     # specified in the backlog table
     performed_actions <- prioritized_necessary_actions %>% 
-      filter(backlog_cost >= backlog_sought %>%
+      filter(backlog_cost > backlog_sought %>%
           filter(year == current_year) %>% 
           pull(backlog)
         ) %>% 
