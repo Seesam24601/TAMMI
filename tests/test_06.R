@@ -44,7 +44,7 @@ end_year <- 2005
 
 test_that(test_name, {
   expect_equal(
-    unconstrained_run(
+    unconstrained(
       assets, 
       asset_types, 
       asset_actions, 
@@ -61,7 +61,7 @@ test_that(test_name, {
     tolerance = 0.001
   )
   expect_equal(
-    traditional_run(
+    traditional(
       assets, 
       asset_types, 
       asset_actions, 

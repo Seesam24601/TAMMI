@@ -53,7 +53,7 @@ cost_adjustment_dummy <- function(
 
 test_that(test_name, {
   expect_equal(
-    unconstrained_run(
+    unconstrained(
       assets, 
       asset_types, 
       asset_actions, 
@@ -70,7 +70,7 @@ test_that(test_name, {
     )
   )
   expect_equal(
-    traditional_run(
+    traditional(
       assets, 
       asset_types, 
       asset_actions, 

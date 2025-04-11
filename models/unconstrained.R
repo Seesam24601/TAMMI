@@ -1,5 +1,4 @@
-# This file contains the unconstraine_run function
-# This file is tested by tests/unconstrained_test.R
+# This file contains the unconstrained model
 
 library(tidyverse)
 library(here)
@@ -10,15 +9,17 @@ source(here("functions/cost_adjustment.R"))
 source(here("functions/annual_adjustment.R"))
 
 
-# ---- unconstrained_run ----
-unconstrained_run <- function(assets,
-                              asset_types,
-                              asset_actions,
-                              start_year,
-                              end_year,
-                              necessary_actions = actions_by_age,
-                              cost_adjustment = inflation,
-                              annual_adjustment = replace_assets) {
+# ---- unconstrained ----
+unconstrained<- function(
+  assets,
+  asset_types,
+  asset_actions,
+  start_year,
+  end_year,
+  necessary_actions = actions_by_age,
+  cost_adjustment = inflation,
+  annual_adjustment = replace_assets
+) {
   "
   Parameters:
     assets - See docs/input_tables.md
