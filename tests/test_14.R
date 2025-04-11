@@ -20,9 +20,9 @@ asset_actions <- tibble(
   replacement_flag = c(1)
 )
 
-backlog <- tibble(
+sought_backlog <- tibble(
   year = c(2000),
-  budget = c(1000)
+  backlog = c(0)
 )
 
 start_year <- 2000
@@ -37,7 +37,7 @@ test_that(test_name, {
       assets, 
       asset_types, 
       asset_actions, 
-      backlog,
+      sought_backlog,
       start_year, 
       end_year
     )$performed_actions,
@@ -60,7 +60,7 @@ rm(list = c(
   "assets",
   "asset_types",
   "asset_actions",
-  "backlog",
+  "sought_backlog",
   "start_year",
   "end_year"
 ))

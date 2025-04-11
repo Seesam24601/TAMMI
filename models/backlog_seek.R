@@ -14,7 +14,7 @@ backlog_seek <- function(
   assets,
   asset_types,
   asset_actions,
-  backlog,
+  sought_backlog,
   start_year,
   end_year,
   action_priorities = prioritize_longest_wait,
@@ -27,7 +27,7 @@ backlog_seek <- function(
     assets - See docs/input_tables.md
     asset_types - See docs/input_tables.md
     asset_actions - See docs/input_tables.md
-    backlog - See docs/input_table.md
+    sought_backlog - See docs/input_table.md
     start_year - The first year the model calculates actions for. This should be an
       integer value. This should be <= end_year.
     end_year - That last year the model calculates actions for. This should be an
@@ -81,10 +81,20 @@ backlog_seek <- function(
       cost_adjustment_wrapper(cost_adjustment, ., current_year, start_year) %>% 
       
       # Order based on action_priorities
-      action_priorities_wrapper(action_priorities, ., current_year)
+      action_priorities_wrapper(action_priorities, ., current_year) %>% 
+      
+      # Get the total cost of the backlog if the current record is the last action that
+      # is funded
+      mutate(backlog_cost = lag(rev(cumsum(rev(cost))), default = 0))
     
-    # Placeholder for section that chooses actions up to desired backlog
-    performed_actions <- prioritized_necessary_actions
+    # Perform actions up to the point where the backlog for the year is below the value 
+    # specified in the backlog table
+    performed_actions <- prioritized_necessary_actions %>% 
+      filter(backlog_cost >= sought_backlog %>%
+          filter(year == current_year) %>% 
+          pull(backlog)
+        ) %>% 
+      subset(select = -backlog_cost)
 
     # Skip the following if there are no necessary actions
     if (length(prioritized_necessary_actions) > 0) {
