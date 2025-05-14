@@ -59,7 +59,7 @@ backlog_seek <- function(
   # Assert that the backlog_sought tibble meets its requirements
   test_backlog_sought(backlog_sought, start_year, end_year)
 
-  # For each year between start_year and end_year (including both), note every asset
+  # For each year between start_year and end_year (excluding start_year), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
   backlog <- list()
@@ -90,12 +90,17 @@ backlog_seek <- function(
     
     # Perform actions up to the point where the backlog for the year is below the value 
     # specified in the backlog table
-    performed_actions <- prioritized_necessary_actions %>% 
-      filter(backlog_cost > backlog_sought %>%
-          filter(year == current_year) %>% 
-          pull(backlog)
-        ) %>% 
-      subset(select = -backlog_cost)
+    # Do not perform any actions in the first year to establish a baseline
+    if (current_year != start_year) {
+      performed_actions <- prioritized_necessary_actions %>% 
+        filter(backlog_cost > backlog_sought %>%
+            filter(year == current_year) %>% 
+            pull(backlog)
+          ) %>% 
+        subset(select = -backlog_cost)
+    } else {
+      performed_actions <- tibble()
+    }
 
     # Skip the following if there are no necessary actions
     if (length(prioritized_necessary_actions) > 0) {
@@ -139,7 +144,7 @@ backlog_seek <- function(
       
     }
 
-  }
+    }
 
   # Create a single object with all the results
   result <- list(
