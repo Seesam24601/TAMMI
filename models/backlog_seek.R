@@ -91,15 +91,15 @@ backlog_seek <- function(
     # Perform actions up to the point where the backlog for the year is below the value 
     # specified in the backlog table
     # Do not perform any actions in the first year to establish a baseline
-    if (current_year != start_year) {
+    if (current_year == start_year) {
+      performed_actions <- tibble()
+    } else {
       performed_actions <- prioritized_necessary_actions %>% 
         filter(backlog_cost > backlog_sought %>%
             filter(year == current_year) %>% 
             pull(backlog)
           ) %>% 
         subset(select = -backlog_cost)
-    } else {
-      performed_actions <- tibble()
     }
 
     # Skip the following if there are no necessary actions

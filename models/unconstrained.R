@@ -53,6 +53,7 @@ unconstrained<- function(
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
   actions <- list()
+  backlog <- list()
   for (current_year in start_year:end_year){
 
     # Left join asset_types and asset_actions on to assets
@@ -64,7 +65,7 @@ unconstrained<- function(
     previous_actions <- do.call(rbind, actions)
     
     # Get a list of replacements that need to be made in year
-    actions[[current_year]] <- asset_details %>% 
+    prioritized_necessary_actions <- asset_details %>% 
     
       necessary_actions_wrapper(necessary_actions, ., previous_actions, current_year) %>% 
       
@@ -75,6 +76,15 @@ unconstrained<- function(
       mutate(year = current_year) %>% 
       
       subset(select = c(year, asset_id, asset_type_id, action_id, cost))
+    
+    # If the current_year is the start_year, then no actions are performed; 
+    # otherwise alla ctions are performed
+    # This is to keep the model consistent with other models and TERM Lite
+    if (current_year == start_year) {
+      actions[[current_year]] <- prioritized_necessary_actions 
+    } else {
+      backlog[[current_year]] <- prioritized_necessary_actions 
+    }
 
     # Perform annual adjustments
     assets <- annual_adjustment_wrapper(annual_adjustment,
@@ -87,7 +97,8 @@ unconstrained<- function(
 
   # Create a single object with all the results
   result <- list(
-    performed_actions = do.call(bind_rows, actions)
+    performed_actions = do.call(bind_rows, actions),
+    backlog = do.call(bind_rows, backlog)
   )
 
   class(result) <- "unconstrained_tammi_model"
