@@ -58,7 +58,7 @@ This table contains 1 row for each year and the desired value for the backlog in
 
 | Field | Code | Description |
 | ---- | ---- | ---- |
-| `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. This must be integer-valued. |
+| `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, (`start_year` + 1) and `end_year`. `start_year` is not included because no actions are performed the first year and instead a baseline is created. This must be integer-valued. |
 | `backlog` | | The value of the backlog desired for that year. This must be integer-valued. |
 
 
