@@ -50,10 +50,15 @@ unconstrained<- function(
   # Assert that asset_actions dataframe meets its requirements
   test_asset_actions(asset_actions, asset_types)
 
+  # Create empty tibbles with the correct fields for each year in actions and backlog
+  # This prevents errors where there are years with no actions and/or no backlog
+  # Use as.character here because numbers cannot be keys in lists within R
+  fields <- c("year", "asset_id", "asset_type_id", "action_id", "cost")
+  actions <- set_names(map(as.character(start_year:end_year), ~ tibble(!!!set_names(rep(list(integer()), length(fields)), fields))), as.character(start_year:end_year))
+  backlog <- set_names(map(as.character(start_year:end_year), ~ tibble(!!!set_names(rep(list(integer()), length(fields)), fields))), as.character(start_year:end_year))
+
   # For each year between start_year and end_year (including both), note every asset
   # that needs to be replaced and update its value in asset_details
-  actions <- list()
-  backlog <- list()
   for (current_year in start_year:end_year){
 
     # Left join asset_types and asset_actions on to assets
@@ -80,10 +85,11 @@ unconstrained<- function(
     # If the current_year is the start_year, then no actions are performed; 
     # otherwise alla ctions are performed
     # This is to keep the model consistent with other models and TERM Lite
+    # Use slice(0) to create an empty tibble with the same fields
     if (current_year == start_year) {
-      actions[[current_year]] <- prioritized_necessary_actions 
+      backlog[[as.character(current_year)]] <- prioritized_necessary_actions 
     } else {
-      backlog[[current_year]] <- prioritized_necessary_actions 
+      actions[[as.character(current_year)]] <- prioritized_necessary_actions 
     }
 
     # Perform annual adjustments
@@ -91,7 +97,7 @@ unconstrained<- function(
                                         assets, 
                                         asset_types, 
                                         asset_actions, 
-                                        actions[[current_year]], 
+                                        actions[[as.character(current_year)]], 
                                         current_year)
   }
 

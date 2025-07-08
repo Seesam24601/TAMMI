@@ -47,11 +47,10 @@ actions_by_age <- function(asset_details,
 
   # Only keep actions for assets who are older than the age_trigger
   # If there are no previous actions, nothing else is needed
-  if(is.null(previous_actions)) {
-
+  if(nrow(previous_actions) <= 0) {
     asset_details %>% 
       filter(current_year - year_built >= age_trigger)
-
+  
   } else {
 
     previous_actions %>% 
