@@ -276,16 +276,6 @@ traditional <- function(
           
           mutate(year = current_year) %>% 
           subset(select = c(year, asset_id, asset_type_id, action_id, cost))
-
-        # Perform annual adjustments
-        assets <- annual_adjustment_wrapper(
-          annual_adjustment,
-          assets, 
-          asset_types, 
-          asset_actions, 
-          actions[[as.character(current_year)]], 
-          current_year
-        )
         
       # Get the backlog in the case where no actions were performed, but some were necessary
       } else {
@@ -308,6 +298,16 @@ traditional <- function(
         current_year
       )
     }
+
+    # Perform annual adjustments
+    assets <- annual_adjustment_wrapper(
+      annual_adjustment,
+      assets, 
+      asset_types, 
+      asset_actions, 
+      actions[[as.character(current_year)]], 
+      current_year
+    )
 
   }
 
