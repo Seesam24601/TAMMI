@@ -213,10 +213,14 @@ traditional <- function(
   # Assert that budget_sctions tibble meets its requirements
   test_budget_actions(budget_actions, budgets, asset_actions)
 
-  # For each year between start_year and end_year (including both), note every asset
-  # that needs to be replaced and update its value in asset_details
-  actions <- list()
-  backlog <- list()
+  # Create empty tibbles with the correct fields for each year in actions and backlog
+  # This prevents errors where there are years with no actions and/or no backlog
+  # Use as.character here because numbers cannot be keys in lists within R
+  action_fields <- c("year", "asset_id", "asset_type_id", "action_id", "budget_id", "cost")
+  actions <- set_names(map(as.character(start_year:end_year), ~ tibble(!!!set_names(rep(list(integer()), length(action_fields)), action_fields))), as.character(start_year:end_year))
+  backflog_fields <- c("year", "asset_id", "asset_type_id", "action_id", "cost")
+  backlog <- set_names(map(as.character(start_year:end_year), ~ tibble(!!!set_names(rep(list(integer()), length(backflog_fields)), backflog_fields))), as.character(start_year:end_year))
+
   for (current_year in start_year:end_year){
 
     # Left join asset_types and asset_actions on to assets
@@ -239,10 +243,16 @@ traditional <- function(
       action_priorities_wrapper(action_priorities, ., current_year)
     
     # Apply budgets and get both performed_actions and an updated budgets object from the results
-    results <- prioritized_necessary_actions %>% 
-      apply_budget(budgets, budget_years, budget_actions, current_year, budget_priorities, skip_large)
-    performed_actions <- results$performed_actions
-    budget_years <- results$budget_years
+    # Do not get performed actions in the first year since that is only used to get a baseline 
+    # for the backlog
+    if (current_year > start_year) {
+      results <- prioritized_necessary_actions %>% 
+        apply_budget(budgets, budget_years, budget_actions, current_year, budget_priorities, skip_large)
+      performed_actions <- results$performed_actions
+      budget_years <- results$budget_years
+    } else {
+      performed_actions <- tibble()
+    }
 
     # Skip the following if there are no necessary actions
     if (length(prioritized_necessary_actions) > 0) {
@@ -251,7 +261,7 @@ traditional <- function(
       if (length(performed_actions) > 0) {
 
         # Set performed actions for the current_year
-        actions[[current_year]] <- performed_actions %>% 
+        actions[[as.character(current_year)]] <- performed_actions %>% 
 
           # Add the year of the replacement as a column
           mutate(year = current_year) %>% 
@@ -259,7 +269,7 @@ traditional <- function(
           subset(select = c(year, asset_id, asset_type_id, action_id, budget_id, cost))
         
         # Get backlog for the current year as all necessary actions that were not performed
-        backlog[[current_year]] <- prioritized_necessary_actions %>% 
+        backlog[[as.character(current_year)]] <- prioritized_necessary_actions %>% 
 
           # Get all actions that were not performed
           anti_join(performed_actions, join_by(asset_id == asset_id, action_id == action_id)) %>% 
@@ -273,13 +283,13 @@ traditional <- function(
           assets, 
           asset_types, 
           asset_actions, 
-          actions[[current_year]], 
+          actions[[as.character(current_year)]], 
           current_year
         )
         
       # Get the backlog in the case where no actions were performed, but some were necessary
       } else {
-        backlog[[current_year]] <- prioritized_necessary_actions %>%           
+        backlog[[as.character(current_year)]] <- prioritized_necessary_actions %>%           
           mutate(year = current_year) %>% 
           subset(select = c(year, asset_id, asset_type_id, action_id, cost))
       }
@@ -287,10 +297,10 @@ traditional <- function(
     }
 
     # Carryover leftover money from one year to the next in budgets where applicable
-
+    # Do not carryover in the first year because there is no budget applied
     # Do not carryover if the current_year is the end_year because this may cause errors
     # when trying to select certain rows from the budget_years_detailed table
-    if (current_year != end_year) {
+    if (current_year != start_year & current_year != end_year) {
       budget_years <- budget_carryover_wrapper(
         budget_carryover,
         budgets,
@@ -299,7 +309,7 @@ traditional <- function(
       )
     }
 
-    }
+  }
 
   # Create a single object with all the results
   result <- list(

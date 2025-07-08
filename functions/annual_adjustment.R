@@ -51,9 +51,6 @@ replace_assets <- function(assets,
   See docs/functions.md
   "
 
-  print(current_year)
-  print(nrow(performed_actions))
-
   # If there are no performed actions, then no replacements need to be made
   if (nrow(performed_actions) > 0) {
 

@@ -93,12 +93,14 @@ unconstrained<- function(
     }
 
     # Perform annual adjustments
-    assets <- annual_adjustment_wrapper(annual_adjustment,
-                                        assets, 
-                                        asset_types, 
-                                        asset_actions, 
-                                        actions[[as.character(current_year)]], 
-                                        current_year)
+    assets <- annual_adjustment_wrapper(
+      annual_adjustment,
+      assets, 
+      asset_types, 
+      asset_actions, 
+      actions[[as.character(current_year)]], 
+      current_year
+    )
   }
 
   # Create a single object with all the results
