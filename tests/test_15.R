@@ -21,12 +21,12 @@ asset_actions <- tibble(
 )
 
 backlog_sought <- tibble(
-  year = c(2000, 2001, 2002, 2003, 2004),
+  year = c(2001, 2002, 2003, 2004, 2005),
   backlog = c(40, 30, 20, 10, 0)
 )
 
 start_year <- 2000
-end_year <- 2004
+end_year <- 2005
 
 # Dummy function to ignore inflation
 cost_adjustment_dummy <- function(
@@ -52,7 +52,7 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
-      year = c(2000, 2000, 2002),
+      year = c(2001, 2001, 2003),
       asset_id = c(0, 1, 2),
       asset_type_id = c(0, 1, 2),
       action_id = c(0, 1, 2),
@@ -70,11 +70,11 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$backlog,
     tibble(
-      year = c(2000, 2001),
-      asset_id = c(2, 2),
-      asset_type_id = c(2, 2),
-      action_id = c(2, 2),
-      cost = c(30, 30)
+      year = c(2000, 2000, 2000, 2001, 2002),
+      asset_id = c(0, 1, 2, 2, 2),
+      asset_type_id = c(0, 1, 2, 2, 2),
+      action_id = c(0, 1, 2, 2, 2),
+      cost = c(10, 20, 30, 30, 30)
     )
   )
 })

@@ -27,8 +27,8 @@ budgets <- tibble(
 
 budget_years <- tibble(
   budget_id = rep(0),
-  year = 2000:2005,
-  budget = c(100, 0, 0, 0, 0, 0)
+  year = 2001:2005,
+  budget = c(100, 0, 0, 0, 0)
 )
 
 budget_actions <- tibble(
@@ -65,7 +65,7 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
-      year = c(2000),
+      year = c(2001),
       asset_id = c(0),
       asset_type_id = c(0),
       action_id = c(0),
@@ -86,11 +86,11 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$backlog,
     tibble(
-      year = c(2005),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      action_id = c(1),
-      cost = c(500)
+      year = c(2000, 2005),
+      asset_id = c(0, 0),
+      asset_type_id = c(0, 0),
+      action_id = c(0, 1),
+      cost = c(100, 500)
     )
   )
 })

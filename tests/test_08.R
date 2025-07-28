@@ -27,7 +27,7 @@ budgets <- tibble(
 
 budget_years <- tibble(
   budget_id = rep(0),
-  year = 2000:2001,
+  year = 2001:2002,
   budget = rep(50)
 )
 
@@ -37,7 +37,7 @@ budget_actions <- tibble(
 )
 
 start_year <- 2000
-end_year <- 2001
+end_year <- 2002
 
 # Dummy function to ignore inflation
 cost_adjustment_dummy <- function(
@@ -65,7 +65,7 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
-      year = c(2001),
+      year = c(2002),
       asset_id = c(0),
       asset_type_id = c(0),
       action_id = c(0),
@@ -86,11 +86,11 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$backlog,
     tibble(
-      year = c(2000),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      action_id = c(0),
-      cost = c(100)
+      year = c(2000, 2001),
+      asset_id = c(0, 0 ),
+      asset_type_id = c(0, 0),
+      action_id = c(0, 0),
+      cost = c(100, 100)
     )
   )
 })

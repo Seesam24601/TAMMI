@@ -51,14 +51,24 @@ replace_assets <- function(assets,
   See docs/functions.md
   "
 
-  # Get the subset of actions for the current year that are replacements
-  replacements <- performed_actions %>% 
-    left_join(asset_actions, by = "action_id") %>% 
-    filter(replacement_flag == 1)
+  # If there are no performed actions, then no replacements need to be made
+  if (nrow(performed_actions) > 0) {
 
-  # Update year_built for assets that have been replaced
-  assets %>% 
-    mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
-                                current_year,
-                                year_built))
+    # Get the subset of actions for the current year that are replacements
+    replacements <- performed_actions %>% 
+      left_join(asset_actions, by = "action_id") %>% 
+      filter(replacement_flag == 1)
+
+    # Update year_built for assets that have been replaced
+    assets %>% 
+      mutate(year_built = ifelse(asset_id %in% replacements$asset_id,
+                                  current_year,
+                                  year_built))
+
+  } else {
+    assets
+  }
+
+
+
 }

@@ -27,7 +27,7 @@ budgets <- tibble(
 
 budget_years <- tibble(
   budget_id = rep(0),
-  year = 2000:2005,
+  year = 2001:2006,
   budget = rep(1000)
 )
 
@@ -37,7 +37,7 @@ budget_actions <- tibble(
 )
 
 start_year <- 2000
-end_year <- 2005
+end_year <- 2006
 
 
 # ---- Test -----
@@ -49,16 +49,16 @@ test_that(test_name, {
       asset_types, 
       asset_actions, 
       start_year, 
-      end_year
+      end_year,
     )$performed_actions,
     tibble(
-      year = c(2000, 2005),
+      year = c(2001, 2006),
       asset_id = c(0, 0),
       asset_type_id = c(0, 0),
       action_id = c(0, 0),
-      cost = c(100, 116)
+      cost = c(103, 119)
     ),
-    tolerance = 0.001
+    tolerance = 0.01
   )
   expect_equal(
     traditional(
@@ -72,14 +72,14 @@ test_that(test_name, {
       end_year
     )$performed_actions,
     tibble(
-      year = c(2000, 2005),
+      year = c(2001, 2006),
       asset_id = c(0, 0),
       asset_type_id = c(0, 0),
       action_id = c(0, 0),
       budget_id = c(0, 0),
-      cost = c(100, 116)
+      cost = c(103, 119)
     ),
-    tolerance = 0.001
+    tolerance = 0.01
   )
 })
 

@@ -230,10 +230,10 @@ test_backlog_sought <- function(backlog_sought, start_year, end_year) {
   columns_in_df(backlog_sought, c("year", "backlog"), "budget_years") 
 
   # Assert there is a year value for every year between, and including, start_year and end_year
-  for (current_year in start_year:end_year){
+  for (current_year in (start_year + 1):end_year){
 
     if (!(current_year %in% backlog_sought$year)) {
-      error_message <- paste("The backlog_sought table is missing a year between start_year and end_year:", current_year)
+      error_message <- paste("The backlog_sought table is missing a year between (start_year + 1) and end_year:", current_year)
       stop(error_message, call. = FALSE)
     }
 
@@ -296,8 +296,10 @@ test_budget_years <- function(budget_years, budgets, start_year, end_year) {
     "budgets",
     "budget_id")
 
-  # Assert there is a year value for every year between, and including, start_year and end_year
-  for (current_year in start_year:end_year){
+  # Assert there is a year value for every year between, and including, start_year + 1 and end_year
+  # No budget for the start_year because that is used to get a backlog baseline
+  # And thus no budget is applied
+  for (current_year in (start_year + 1):end_year){
 
     if (!(current_year %in% budget_years$year)) {
       error_message <- paste("The budget_years table is missing a year between start_year and end_year:", current_year)

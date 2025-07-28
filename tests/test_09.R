@@ -27,7 +27,7 @@ budgets <- tibble(
 
 budget_years <- tibble(
   budget_id = c(0),
-  year = c(2000),
+  year = c(2001),
   budget = c(50)
 )
 
@@ -37,7 +37,16 @@ budget_actions <- tibble(
 )
 
 start_year <- 2000
-end_year <- 2000
+end_year <- 2001
+
+# Dummy function to ignore inflation
+cost_adjustment_dummy <- function(
+  asset_details,
+  current_year,
+  start_year
+) {
+  asset_details
+}
 
 
 # ---- Test -----
@@ -46,7 +55,7 @@ end_year <- 2000
 
 test_that(test_name, {
   expect_equal(
-    traditional(
+    nrow(traditional(
       assets, 
       asset_types, 
       asset_actions, 
@@ -55,9 +64,10 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      skip_large = FALSE
-    )$performed_actions,
-    tibble()
+      skip_large = FALSE,
+      cost_adjustment = cost_adjustment_dummy
+    )$performed_actions),
+    0
   )
   expect_equal(
     traditional(
@@ -69,14 +79,15 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      skip_large = FALSE
+      skip_large = FALSE,
+      cost_adjustment = cost_adjustment_dummy
     )$backlog,
     tibble(
-      year = c(2000, 2000),
-      asset_id = c(0, 0),
-      asset_type_id = c(0, 0),
-      action_id = c(0, 1),
-      cost = c(100, 50)
+      year = c(2000, 2000, 2001, 2001),
+      asset_id = c(0, 0, 0, 0),
+      asset_type_id = c(0, 0, 0, 0),
+      action_id = c(0, 1, 0, 1),
+      cost = c(100, 50, 100, 50)
     )
   )
   expect_equal(
@@ -89,10 +100,11 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      skip_large = TRUE
+      skip_large = TRUE,
+      cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
-      year = c(2000),
+      year = c(2001),
       asset_id = c(0),
       asset_type_id = c(0),
       action_id = c(1),
@@ -110,14 +122,15 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      skip_large = TRUE
+      skip_large = TRUE,
+      cost_adjustment = cost_adjustment_dummy
     )$backlog,
     tibble(
-      year = c(2000),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      action_id = c(0),
-      cost = c(100)
+      year = c(2000, 2000, 2001),
+      asset_id = c(0, 0, 0),
+      asset_type_id = c(0, 0, 0),
+      action_id = c(0, 1, 0),
+      cost = c(100, 50, 100)
     )
   )
 })
