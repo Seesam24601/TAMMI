@@ -229,7 +229,7 @@ traditional <- function(
       left_join(asset_actions, by = "asset_type_id", relationship = "many-to-many")
 
     # Get the subset of assets that need to be replaced in year
-    previous_actions <- do.call(rbind, actions)
+    previous_actions <- do.call(bind_rows, actions)
     
     # Get a list of asset-action combinations that need to be made in year
     prioritized_necessary_actions <- asset_details %>% 
