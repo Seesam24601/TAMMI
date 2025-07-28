@@ -27,7 +27,7 @@ budgets <- tibble(
 
 budget_years <- tibble(
   budget_id = c(0, 0),
-  year = c(2000, 2001),
+  year = c(2001, 2002),
   budget = c(100, 100)
 )
 
@@ -40,7 +40,7 @@ budget_actions <- tibble(
 # same asset
 # Do not go all the way to 2005 as in test 5 because we don't need to test carryover here
 start_year <- 2000
-end_year <- 2001
+end_year <- 2002
 
 # Dummy function to ignore inflation
 cost_adjustment_dummy <- function(
@@ -68,7 +68,7 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
-      year = c(2000),
+      year = c(2001),
       asset_id = c(0),
       asset_type_id = c(0),
       action_id = c(0),

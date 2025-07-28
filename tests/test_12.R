@@ -65,7 +65,7 @@ test_that(test_name, {
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
-      year = c(2000, 2005),
+      year = c(2001, 2005),
       asset_id = c(0, 0),
       asset_type_id = c(0, 0),
       action_id = c(0, 1),
