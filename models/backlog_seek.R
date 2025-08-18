@@ -147,6 +147,17 @@ backlog_seek <- function(
       
     }
 
+      # If proportion is true, reset the backlog_sought values to be proportions
+      # of the backlog in start_year
+      if (proportion & current_year == start_year) {
+        start_year_backlog <- backlog[[current_year]] %>% 
+          summarize(cost = sum(cost)) %>% 
+          pull()
+        # This is not done using tidyverse because it was getting funky with both the field
+        # and the separate list being named backlog
+        backlog_sought$backlog <- backlog_sought$backlog * start_year_backlog
+      }
+
     }
 
   # Create a single object with all the results
