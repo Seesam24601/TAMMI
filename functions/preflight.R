@@ -69,6 +69,29 @@ is_integer_col <- function(col, df_name, col_name) {
 }
 
 
+is_proportion_col <- function(col, df_name, col_name) {
+  "
+  Parameters: 
+    col - Vector to be tested on
+    df_name - Name of the dataframe to be used in the error message
+    col_name - Name of the column to be used in the error mesage
+
+  Returns:
+    Nothing if x is a number between 0 and 1 for every element
+    of col. Otherwise, it throws an error.
+  "
+  error_message <- paste("The", col_name, "field in", df_name, "cannot contains values other than numbers between 0 and 1")
+  
+  tryCatch({
+    if (!all(sapply(col, (function(x) (x >= 0) & (x <= 1))))) {
+      stop(error_message, call. = FALSE)
+    }
+  }, error = function(msg) {
+    stop(error_message, call. = FALSE)
+  })
+}
+
+
 is_flag_col <- function(col, df_name, col_name) {
   "
   Parameters: 
@@ -215,10 +238,11 @@ test_asset_types <- function(asset_types) {
 }
 
 
-test_backlog_sought <- function(backlog_sought, start_year, end_year) {
+test_backlog_sought <- function(backlog_sought, proportion, start_year, end_year) {
   "
   Parameters:
     backlog_sought
+    proportion  
     start_year (passed preflight)
     end_year (passed preflight)
 
@@ -239,8 +263,13 @@ test_backlog_sought <- function(backlog_sought, start_year, end_year) {
 
   }
 
+  # Assert the athe values for backlog are numbers between 0 and 1
+  if (proportion) {
+    is_proportion_col(backlog_sought$backlog, "backlog_sought", "backlog")
   # Assert that the values for backlog are integers
-  is_integer_col(backlog_sought$backlog, "backlog_sought", "backlog")
+  } else {
+    is_integer_col(backlog_sought$backlog, "backlog_sought", "backlog")
+  }
 
 }
 

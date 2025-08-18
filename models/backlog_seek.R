@@ -20,7 +20,8 @@ backlog_seek <- function(
   action_priorities = prioritize_longest_wait,
   annual_adjustment = replace_assets,
   cost_adjustment = inflation,
-  necessary_actions = actions_by_age
+  necessary_actions = actions_by_age,
+  proportion = FALSE
 ) {
   "
   Parameters:
@@ -36,6 +37,8 @@ backlog_seek <- function(
     annual_adjustment - See docs/functions.md
     cost_adjustment - See docs/dunctions.md
     necessary_actions - See docs/functions.md
+    proportion - Boolean value. If true then expect values between 0 and 1 and consider them 
+      as the proportion of the backlog in the starting year that is desired in that year
 
   Returns:
     performed_actions - see output_tables.md 
@@ -57,7 +60,7 @@ backlog_seek <- function(
   test_asset_actions(asset_actions, asset_types)
 
   # Assert that the backlog_sought tibble meets its requirements
-  test_backlog_sought(backlog_sought, start_year, end_year)
+  test_backlog_sought(backlog_sought, proportion, start_year, end_year)
 
   # For each year between start_year and end_year (excluding start_year), note every asset
   # that needs to be replaced and update its value in asset_details
