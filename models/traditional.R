@@ -164,32 +164,7 @@ traditional <- function(
   skip_large = FALSE
 ) {
   "
-  Parameters:
-    assets - See docs/input_tables.md
-    asset_types - See docs/input_tables.md
-    asset_actions - See docs/input_tables.md
-    budgets - See docs/input_table.md
-    budget_years - See docs/input_table.md
-    budget_Actions - See docs/input_table.md
-    start_year - The first year the model calculates actions for. This should be an
-      integer value. This should be <= end_year.
-    end_year - That last year the model calculates actions for. This should be an
-      integer value. This should >= start_year.
-    action_priorities - See docs/functions.md
-    annual_adjustment - See docs/functions.md
-    budget_carryover - See docs/functions.md
-    budget_priorities - See docs/functions.md
-    cost_adjustment - See docs/dunctions.md
-    necessary_actions - See docs/functions.md
-    skip_large - A boolean value. If skip_large is true, then in the case where skipping an
-      expensive action in the prioritized list of necessary actions reveals a cheaper action
-      that is still within budget, the algorithm will choose this approach. This should
-      not be used when carryover is also TRUE.
-
-  Returns:
-    performed_actions - see output_tables.md 
-    backlog - see output_tables.md
-  This run is constrained in the amount of spending per year by budgets                      
+  See functions/models.md
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year
