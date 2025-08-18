@@ -21,21 +21,7 @@ unconstrained<- function(
   annual_adjustment = replace_assets
 ) {
   "
-  Parameters:
-    assets - See docs/input_tables.md
-    asset_types - See docs/input_tables.md
-    asset_actions - See docs/input_tables.md
-    start_year - The first year the model calculates actions for. This should be an
-      integer value. This should be <= end_year.
-    end_year - That last year the model calculates actions for. This should be an
-      integer value. This should >= start_year.
-    necessary_actions - See docs/functions.md
-    cost_adjustment - See docs/functions.md
-    annual_adjustments - See docs/functions.md
-
-  Returns:
-    performed_actions - see output_tables.md
-  This run includes no constraints on the spending per year                       
+  See functions/models.md
   "
   
   # Assert that start_year and end_year and integers and start_year <= end_year

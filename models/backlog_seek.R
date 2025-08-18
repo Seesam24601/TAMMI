@@ -24,27 +24,7 @@ backlog_seek <- function(
   proportion = FALSE
 ) {
   "
-  Parameters:
-    assets - See docs/input_tables.md
-    asset_types - See docs/input_tables.md
-    asset_actions - See docs/input_tables.md
-    backlog_sought - See docs/input_table.md
-    start_year - The first year the model calculates actions for. This should be an
-      integer value. This should be <= end_year.
-    end_year - That last year the model calculates actions for. This should be an
-      integer value. This should >= start_year.
-    action_priorities - See docs/functions.md
-    annual_adjustment - See docs/functions.md
-    cost_adjustment - See docs/dunctions.md
-    necessary_actions - See docs/functions.md
-    proportion - Boolean value. If true then expect values between 0 and 1 and consider them 
-      as the proportion of the backlog in the starting year that is desired in that year
-
-  Returns:
-    performed_actions - see output_tables.md 
-    backlog - see output_tables.md
-  This run aims to return the necessary spending to get a certain cost value in the backlog 
-    for each year               
+  See functions/models.md           
   "
 
   # Assert that start_year and end_year and integers and start_year <= end_year
