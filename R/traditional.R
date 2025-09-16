@@ -1,7 +1,6 @@
 # This file contains the traditional model
 
 
-#' @export
 apply_budget <- function(
   prioritized_necessary_actions,
   budgets,
@@ -134,7 +133,7 @@ apply_budget <- function(
 }
 
 
-# ---- traditional ----
+#' @export
 traditional <- function(
   assets,
   asset_types,
