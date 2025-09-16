@@ -1,14 +1,5 @@
 # This file contains the backlog_seek model
 
-library(tidyverse)
-library(here)
-
-source(here("functions/preflight.R"))
-source(here("functions/action_priorities.R"))
-source(here("functions/annual_adjustment.R"))
-source(here("functions/cost_adjustment.R"))
-source(here("functions/necessary_actions.R"))
-
 
 backlog_seek <- function(
   assets,

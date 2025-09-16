@@ -1,13 +1,5 @@
 # This file contains the unconstrained model
 
-library(tidyverse)
-library(here)
-
-source(here("functions/preflight.R"))
-source(here("functions/necessary_actions.R"))
-source(here("functions/cost_adjustment.R"))
-source(here("functions/annual_adjustment.R"))
-
 
 # ---- unconstrained ----
 unconstrained<- function(
