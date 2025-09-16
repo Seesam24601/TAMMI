@@ -42,6 +42,7 @@ annual_adjustment_wrapper <- function(supplied_function,
 }
 
 
+#' @export
 replace_assets <- function(assets,
                            asset_types,
                            asset_actions,

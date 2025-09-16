@@ -1,7 +1,7 @@
 # This file contains the unconstrained model
 
 
-# ---- unconstrained ----
+#' @export
 unconstrained<- function(
   assets,
   asset_types,

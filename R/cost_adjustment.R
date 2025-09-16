@@ -47,6 +47,7 @@ cost_adjustment_wrapper <- function(supplied_function,
 }
 
 
+#' @export
 inflation <- function(asset_details,
                       current_year,
                       start_year,

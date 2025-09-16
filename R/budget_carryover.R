@@ -48,6 +48,7 @@ budget_carryover_wrapper <- function(
 }
 
 
+#' @export
 carryover_all <- function(
   budgets,
   budget_years,

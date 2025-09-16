@@ -35,6 +35,7 @@ necessary_actions_wrapper <- function(supplied_function,
 }
 
 
+#' @export
 actions_by_age <- function(asset_details,
                            previous_actions,
                            current_year) {

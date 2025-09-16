@@ -1,6 +1,7 @@
 # This file contains the backlog_seek model
 
 
+#' @export
 backlog_seek <- function(
   assets,
   asset_types,

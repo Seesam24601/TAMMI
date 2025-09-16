@@ -32,6 +32,7 @@ action_priorities_wrapper <- function(
 }
 
 
+#' @export
 prioritize_longest_wait <- function(
   necessary_actions,
   current_year

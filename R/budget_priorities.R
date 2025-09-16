@@ -41,6 +41,7 @@ budget_priorities_wrapper <- function(
 }
 
 
+#' @export
 prioritize_first <- function(
   possible_budgets
 ){
