@@ -53,3 +53,29 @@ prioritize_longest_wait <- function(
     subset(select = -wait)
 
 }
+
+
+#' @export
+priority_scores <- function(
+  necessary_actions,
+  current_year,
+  priority_scores # priority scores is vector of the form (field = weight)
+) {
+  "
+  TBD
+  "
+
+  # Assert asset_details has all of the fields used for priority scores
+  columns_in_df(necessary_actions, names(priority_scores), "asset_actions")
+
+  # Assert values for priority scores are numeric
+
+  # Generate priority score for each necessary action
+  # Then order from highest to lowest priority
+  priority_score %>% 
+    mutate(priority_score = rowSums(across(all_of(names(weights)), ~ .x * weights[cur_column()]))) %>% 
+    arrange(desc(priority_score)) %>% 
+
+    # Remove extra column
+    subset(select = -priority_score)
+}
