@@ -29,7 +29,7 @@ This table contains 1 row for every action. An action is a capital cost associat
 | ---- | ---- | ---- |
 | `action_id` | PK | |
 | `asset_type_id` | FK | The asset_type that this action applies to. Actions can only apply to a single asset_type. This keys into `asset_type_id` in the `asset_types` table. |
-| `cost` | | The cost of the action. This must be integer-valued. |
+| `cost` | | The cost of the action. This must be integer-valued. If computations in dollars and cents is desired just complete the computations in cents. Using floats will cause issues with float arithmetic. |
 | `replacement_flag` | | 1 if the action is a replacement; 0 otherwise. Replacements differ from other actions in that replacements update the year_built field of the asset. Once an asset is replaced, it can receive non-replacement actions that it has previously received again. |
 
 The following field is only reuqired when using the default neccesary actions function of `actions_by_age`:
@@ -59,7 +59,7 @@ This table contains 1 row for each year and the desired value for the backlog in
 | Field | Code | Description |
 | ---- | ---- | ---- |
 | `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, (`start_year` + 1) and `end_year`. `start_year` is not included because no actions are performed the first year and instead a baseline is created. This must be integer-valued. |
-| `backlog` | | The value of the backlog desired for that year. This must be integer-valued. |
+| `backlog` | | The value of the backlog desired for that year. This must be integer-valued. If computations in dollars and cents is desired just complete the computations in cents. Using floats will cause issues with float arithmetic. |
 
 
 ## budgets
@@ -79,7 +79,7 @@ This table contains 1 row for each combination of budget and year
 | ---- | ---- | ---- |
 | `budget_id` | FK | Keys into the `budget_id` field of the `budgets` table | 
 | `year` | | The year the budget is to be allocated for. This must contain a record for every year between, and including, `start_year` and `end_year`. Note that not every `budget_id` must meet this requirement, but that there must be at least record for each year. This must be integer-valued. |
-| `budget` | | The maximum amount of money that can be allocated in a given year. This must be integer-valued |
+| `budget` | | The maximum amount of money that can be allocated in a given year. This must be integer-valued. If computations in dollars and cents is desired just complete the computations in cents. Using floats will cause issues with float arithmetic.|
 
 
 ## budget_actions
