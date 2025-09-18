@@ -5,10 +5,8 @@ library(tidyverse)
 library(here)
 library(testthat)
 
-# Load models
-source(here("R/unconstrained.R"))
-source(here("R/traditional.R"))
-source(here("R/backlog_seek.R"))
+# Source all files inside the "R" folder
+sapply(list.files("R", full.names = TRUE), source, chdir = TRUE)
 
 # Get all unit tests
 unit_tests <- list.files(path = here("tests"), pattern = "^test.*\\.R$", full.names = TRUE)

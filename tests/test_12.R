@@ -6,7 +6,8 @@ test_name = "Test 12: 2 budgets, each assigned to a different action"
 assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
-  year_built = c(1995)
+  year_built = c(1995),
+  quantity = c(1)
 )
 
 asset_types <- tibble(

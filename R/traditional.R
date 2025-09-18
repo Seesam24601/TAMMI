@@ -189,7 +189,9 @@ traditional <- function(
     # Left join asset_types and asset_actions on to assets
     asset_details <- assets %>% 
       left_join(asset_types, by = "asset_type_id") %>% 
-      left_join(asset_actions, by = "asset_type_id", relationship = "many-to-many")
+      left_join(asset_actions, by = "asset_type_id", relationship = "many-to-many") %>% 
+      # Scale cost by quantity
+      mutate(cost = cost * quantity)
 
     # Get the subset of assets that need to be replaced in year
     previous_actions <- do.call(bind_rows, actions)

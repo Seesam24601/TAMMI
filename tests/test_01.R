@@ -5,7 +5,8 @@ test_name = "Test 1: 1 asset"
 assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
-  year_built = c(1990)
+  year_built = c(1990),
+  quantity = c(1)
 )
 
 asset_types <- tibble(

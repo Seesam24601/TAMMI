@@ -5,7 +5,8 @@ test_name = "Test 15: Backlog seek"
 assets <- tibble(
   asset_id = c(0, 1, 2),
   asset_type_id = c(0, 1, 2),
-  year_built = c(1990, 1990, 1990)
+  year_built = c(1990, 1990, 1990),
+  quantity = c(1, 1, 1)
 )
 
 asset_types <- tibble(

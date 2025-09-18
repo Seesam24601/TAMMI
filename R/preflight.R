@@ -69,6 +69,49 @@ is_integer_col <- function(col, df_name, col_name) {
 }
 
 
+is_non_negative <- function(x, variable_name) {
+  "
+  Parameters: 
+    x - value where is_integer(x) is TRUE
+    variable_name - Name of x to be used in the error mesage
+
+  Returns:
+    Nothing if x >= 0. Otherwise, it throws an error.
+  "
+  error_message <- paste(variable_name, "must be non-negative")
+
+  tryCatch({
+    if (x < 0) {
+      stop(error_message, call. = FALSE)
+    }
+  }, error = function(msg) {
+      stop(error_message, call. = FALSE)
+    })
+}
+
+
+is_non_negative_col <- function(col, df_name, col_name) {
+  "
+  Parameters: 
+    col - Vector to be tested on that has passed is_integer_col
+    df_name - Name of the dataframe to be used in the error message
+    col_name - Name of the column to be used in the error mesage
+
+  Returns:
+    Nothing if x >= 0 for every element of col. Otherwise, it throws an error.
+  "
+  error_message <- paste("The", col_name, "field in", df_name, "cannot contain non-integer values")
+  
+  tryCatch({
+    if (!all(sapply(col, (function(x) x >= 0)))) {
+      stop(error_message, call. = FALSE)
+    }
+  }, error = function(msg) {
+    stop(error_message, call. = FALSE)
+  })
+}
+
+
 is_proportion_col <- function(col, df_name, col_name) {
   "
   Parameters: 
@@ -176,8 +219,9 @@ test_asset_actions <- function(asset_actions, asset_types) {
     "asset_types",
     "asset_type_id")
   
-  # Assert cost is integer-valued
+  # Assert cost is integer-valued and non-negative
   is_integer_col(asset_actions$cost, "asset_actions", "cost")
+  is_non_negative_col(asset_actions$cost, "asset_actions", "cost")
 
   # Assert replacement_flag is a flag
   is_flag_col(asset_actions$replacement_flag, "asset_actions", "replacement_flag")
@@ -197,7 +241,7 @@ test_assets <- function(assets, asset_types, start_year) {
   "
 
   # Assert required columns exist
-  columns_in_df(assets, c("asset_id", "asset_type_id", "year_built"), "assets") 
+  columns_in_df(assets, c("asset_id", "asset_type_id", "year_built", "quantity"), "assets") 
 
   # Assert asset_id is unique
   is_unique_col(assets$asset_id, "assets", "asset_id")
@@ -209,8 +253,11 @@ test_assets <- function(assets, asset_types, start_year) {
              "asset_types",
              "asset_type_id")
 
-  # Assert year_built is integer-valued
+  # Assert year_built and quantity are integer-valued and non-negative
   is_integer_col(assets$year_built, "assets", "year_built")
+  is_non_negative_col(assets$year_built, "assets", "year_built")
+  is_integer_col(assets$quantity, "assets", "quantity")
+  is_non_negative_col(assets$quantity, "assets", "quantity")
 
   # Assert year_built < start_year
   error_message <- "Not all values in year_built in assets are strictly less than start_year"
@@ -266,9 +313,10 @@ test_backlog_sought <- function(backlog_sought, proportion, start_year, end_year
   # Assert the athe values for backlog are numbers between 0 and 1
   if (proportion) {
     is_proportion_col(backlog_sought$backlog, "backlog_sought", "backlog")
-  # Assert that the values for backlog are integers
+  # Assert that the values for backlog are integers and non-negative
   } else {
     is_integer_col(backlog_sought$backlog, "backlog_sought", "backlog")
+    is_non_negative_col(backlog_sought$backlog, "backlog_sought", "backlog")
   }
 
 }
@@ -379,6 +427,8 @@ year_order <- function(start_year, end_year) {
   "
   is_integer(start_year, "start_year")
   is_integer(end_year, "end_year")
+  is_non_negative(start_year, "start_year")
+  is_non_negative(end_year, "end_year")
   if (start_year > end_year) {
     stop("start_year cannot be greater than end_year")
   }
