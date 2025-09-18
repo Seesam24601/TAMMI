@@ -197,7 +197,7 @@ test_assets <- function(assets, asset_types, start_year) {
   "
 
   # Assert required columns exist
-  columns_in_df(assets, c("asset_id", "asset_type_id", "year_built"), "assets") 
+  columns_in_df(assets, c("asset_id", "asset_type_id", "year_built", "quantity"), "assets") 
 
   # Assert asset_id is unique
   is_unique_col(assets$asset_id, "assets", "asset_id")
@@ -209,8 +209,9 @@ test_assets <- function(assets, asset_types, start_year) {
              "asset_types",
              "asset_type_id")
 
-  # Assert year_built is integer-valued
+  # Assert year_built and quantity are integer-valued
   is_integer_col(assets$year_built, "assets", "year_built")
+  is_integer_col(assets$year_built, "assets", "quantity")
 
   # Assert year_built < start_year
   error_message <- "Not all values in year_built in assets are strictly less than start_year"
