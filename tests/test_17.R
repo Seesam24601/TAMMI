@@ -36,6 +36,11 @@ budget_actions <- tibble(
   budget_id = c(0)
 )
 
+backlog_sought <- tibble(
+  year = c(2001),
+  backlog = c(0)
+)
+
 start_year <- 2000
 end_year <- 2001
 
@@ -87,6 +92,24 @@ test_that(test_name, {
       asset_type_id = c(0),
       action_id = c(0),
       budget_id = c(0),
+      cost = c(200)
+    )
+  )
+  expect_equal(
+    backlog_seek(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      backlog_sought,
+      start_year, 
+      end_year,
+      cost_adjustment = cost_adjustment_dummy
+    )$performed_actions,
+    tibble(
+      year = c(2001),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      action_id = c(0),
       cost = c(200)
     )
   )
