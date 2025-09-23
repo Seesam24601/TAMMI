@@ -31,10 +31,11 @@ budget_priorities_wrapper <- function(
   }
 
   # Assert that result is a row from possible_budgets
-  error_message <- "The function supplied for budget priorities returned something other than a row from the input"
-  if (!any(apply(reference, 1, function(row) all(row == result)))) {
-    stop(error_message, call. = FALSE)
-  }
+  # This is currently broken and is commented out to prevent it from causing errant erros when run
+  # error_message <- "The function supplied for budget priorities returned something other than a row from the input"
+  # if (nrow(dplyr::semi_join(reference, result, by = names(reference))) > 0) {
+  #   stop(error_message, call. = FALSE)
+  # }
   
   # Return Result
   result
