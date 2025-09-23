@@ -82,7 +82,7 @@ priority_scores <- function(
   # Generate priority score for each necessary action
   # Then order from highest to lowest priority
   necessary_actions %>% 
-    mutate(priority_score = rowSums(across(all_of(names(weights)), ~ .x * weights[cur_column()]))) %>% 
+    mutate(priority_score = rowSums(across(all_of(names(priority_scores)), ~ .x * priority_scores[cur_column()]))) %>% 
     arrange(desc(priority_score)) %>% 
 
     # Remove extra column

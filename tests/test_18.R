@@ -6,7 +6,7 @@ assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
   year_built = c(1990),
-  quantity = c(2)
+  quantity = c(1)
 )
 
 asset_types <- tibble(
@@ -30,12 +30,12 @@ budgets <- tibble(
 budget_years <- tibble(
   budget_id = c(0),
   year = c(2001),
-  budget = c(200)
+  budget = c(250)
 )
 
 budget_actions <- tibble(
-  action_id = c(0),
-  budget_id = c(0)
+  action_id = c(0, 1),
+  budget_id = c(0, 0)
 )
 
 start_year <- 2000
@@ -64,7 +64,7 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
-      action_priorities = function(...)(priority_scores(priority_scores = c(a = 0.5, b = 0.5), ...)),
+      action_priorities = function(...)(priority_scores(priority_scores = c(a = 0.1, b = 0.9), ...)),
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
@@ -72,6 +72,28 @@ test_that(test_name, {
       asset_id = c(0),
       asset_type_id = c(0),
       action_id = c(0),
+      budget_id = c(0),
+      cost = c(100)
+    )
+  )
+  expect_equal(
+    traditional(
+      assets, 
+      asset_types, 
+      asset_actions, 
+      budgets,
+      budget_years,
+      budget_actions,
+      start_year, 
+      end_year,
+      action_priorities = function(...)(priority_scores(priority_scores = c(a = 0.9, b = 0.1), ...)),
+      cost_adjustment = cost_adjustment_dummy
+    )$performed_actions,
+    tibble(
+      year = c(2001),
+      asset_id = c(0),
+      asset_type_id = c(0),
+      action_id = c(1),
       budget_id = c(0),
       cost = c(200)
     )
