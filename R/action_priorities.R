@@ -53,3 +53,38 @@ prioritize_longest_wait <- function(
     subset(select = -wait)
 
 }
+
+
+#' @export
+priority_scores <- function(
+  necessary_actions,
+  current_year,
+  priority_scores # priority scores is vector of the form (field = weight)
+) {
+  "
+  See docs/functions.md
+  "
+
+  # Assert asset_details has all of the fields used for priority scores
+  columns_in_df(necessary_actions, names(priority_scores), "asset_actions")
+
+  # Assert values for priority scores are non-negative
+  for (field in names(priority_scores)) {
+    is_non_negative_col(necessary_actions, "asset_actions", field)
+  }
+
+  # Assert weights for priority scores are proportions and add to 1
+  for (field in names(priority_scores)) {
+    is_proportion(priority_scores[[field]], paste("The weight associated with", field, "in priority_scores"))
+  }
+  sum_to(priority_scores, 1, "priority_scores")
+
+  # Generate priority score for each necessary action
+  # Then order from highest to lowest priority
+  necessary_actions %>% 
+    mutate(priority_score = rowSums(across(all_of(names(priority_scores)), ~ .x * priority_scores[cur_column()]))) %>% 
+    arrange(desc(priority_score)) %>% 
+
+    # Remove extra column
+    subset(select = -priority_score)
+}

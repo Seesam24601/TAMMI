@@ -1,4 +1,4 @@
-test_name = "Test 17: Quantity"
+test_name = "Test 18: Priority Scores"
 
 # ---- Inputs ----
 
@@ -6,7 +6,7 @@ assets <- tibble(
   asset_id = c(0),
   asset_type_id = c(0),
   year_built = c(1990),
-  quantity = c(2)
+  quantity = c(1)
 )
 
 asset_types <- tibble(
@@ -14,11 +14,13 @@ asset_types <- tibble(
 )
 
 asset_actions <- tibble(
-  action_id = c(0),
-  asset_type_id = c(0),
-  age_trigger = c(5),
-  cost = c(100),
-  replacement_flag = c(1)
+  action_id = c(0, 1),
+  asset_type_id = c(0, 0),
+  age_trigger = c(5, 5),
+  cost = c(100, 200),
+  replacement_flag = c(0, 0),
+  a = c(1, 4),
+  b = c(3, 1)
 )
 
 budgets <- tibble(
@@ -28,17 +30,12 @@ budgets <- tibble(
 budget_years <- tibble(
   budget_id = c(0),
   year = c(2001),
-  budget = c(1000)
+  budget = c(250)
 )
 
 budget_actions <- tibble(
-  action_id = c(0),
-  budget_id = c(0)
-)
-
-backlog_sought <- tibble(
-  year = c(2001),
-  backlog = c(0)
+  action_id = c(0, 1),
+  budget_id = c(0, 0)
 )
 
 start_year <- 2000
@@ -58,12 +55,16 @@ cost_adjustment_dummy <- function(
 
 test_that(test_name, {
   expect_equal(
-    unconstrained(
+    traditional(
       assets, 
       asset_types, 
       asset_actions, 
+      budgets,
+      budget_years,
+      budget_actions,
       start_year, 
       end_year,
+      action_priorities = function(...)(priority_scores(priority_scores = c(a = 0.1, b = 0.9), ...)),
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
@@ -71,7 +72,8 @@ test_that(test_name, {
       asset_id = c(0),
       asset_type_id = c(0),
       action_id = c(0),
-      cost = c(200)
+      budget_id = c(0),
+      cost = c(100)
     )
   )
   expect_equal(
@@ -84,32 +86,15 @@ test_that(test_name, {
       budget_actions,
       start_year, 
       end_year,
+      action_priorities = function(...)(priority_scores(priority_scores = c(a = 0.9, b = 0.1), ...)),
       cost_adjustment = cost_adjustment_dummy
     )$performed_actions,
     tibble(
       year = c(2001),
       asset_id = c(0),
       asset_type_id = c(0),
-      action_id = c(0),
+      action_id = c(1),
       budget_id = c(0),
-      cost = c(200)
-    )
-  )
-  expect_equal(
-    backlog_seek(
-      assets, 
-      asset_types, 
-      asset_actions, 
-      backlog_sought,
-      start_year, 
-      end_year,
-      cost_adjustment = cost_adjustment_dummy
-    )$performed_actions,
-    tibble(
-      year = c(2001),
-      asset_id = c(0),
-      asset_type_id = c(0),
-      action_id = c(0),
       cost = c(200)
     )
   )
@@ -127,7 +112,6 @@ rm(list = c(
   "budgets",
   "budget_years",
   "budget_actions",
-  "backlog_sought",
   "start_year",
   "end_year"
 ))

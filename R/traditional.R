@@ -41,7 +41,7 @@ apply_budget <- function(
   for (i in 1:nrow(prioritized_necessary_actions)){
 
     # Get a tibble that represents the necessary action and the budgets that could be used to pay for it
-    possbile_budgets <- prioritized_necessary_actions %>% 
+    possible_budgets <- prioritized_necessary_actions %>% 
 
       # Only look at the asset-action combination in row i of the necessary_actions table
       filter(row_number() == i) %>% 
@@ -67,7 +67,7 @@ apply_budget <- function(
       left_join(budgets, by = join_by(budget_id))
     
     # Get a signle row that represents the necessary action and the budget that WILL be used to pay for it
-    performed_action <- possbile_budgets %>% 
+    performed_action <- possible_budgets %>% 
       
       filter(
         
@@ -93,7 +93,7 @@ apply_budget <- function(
       budget_years <- budget_years %>% 
         mutate(
           budget = if_else(
-            budget_id == pull(performed_action, budget) & year == current_year,
+            budget_id == pull(performed_action, budget_id) & year == current_year,
             budget - pull(performed_action, cost),
             budget
           )
@@ -110,7 +110,7 @@ apply_budget <- function(
       budget_years <- budget_years %>% 
         mutate(
           skip_flag = if_else(
-            budget_id %in% possbile_budgets$budget_id,
+            budget_id %in% possible_budgets$budget_id,
             TRUE,
             skip_flag
           )

@@ -112,6 +112,28 @@ is_non_negative_col <- function(col, df_name, col_name) {
 }
 
 
+is_proportion <- function(x, variable_name) {
+  "
+  Parameters: 
+    x
+    variable_name - Name of x to be used in the error mesage
+
+  Returns:
+    Nothing if x is a number between 0 and 1. Otherwise, it 
+    throws an error.
+  "
+  error_message <- paste(variable_name, "must be a number between 0 and 1")
+
+  tryCatch({
+    if ((x < 0) | (x > 1)) {
+      stop(error_message, call. = FALSE)
+    }
+  }, error = function(msg) {
+      stop(error_message, call. = FALSE)
+    })
+}
+
+
 is_proportion_col <- function(col, df_name, col_name) {
   "
   Parameters: 
@@ -193,6 +215,25 @@ key_exists <- function(keys, valid_keys, df1_name, df2_name, col_name) {
     stop(error_message, call. = FALSE)
   }
 
+}
+
+
+sum_to <- function(vector, desired_sum, vector_name) {
+  "
+  Parameters:
+    vector - Aribtrary numeric-valued vector
+    desired_sum - Sum that the values of the vector are desired to equal
+    vector_name - Name of the vector to be used in error message
+
+  Returns:
+    Nothing if sum(vector) = desired_sum. Throws an error otherwise
+  "
+  epsilon = 0.00001 # Use to account for float equality
+  error_message <- paste("Sum of", vector_name, "equals", sum(vector), "- should be", desired_sum)
+
+  if (abs(sum(vector) - desired_sum) > epsilon) {
+    stop(error_message, call. = FALSE)
+  }
 }
 
 
