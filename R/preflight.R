@@ -294,10 +294,11 @@ test_assets <- function(assets, asset_types, start_year) {
              "asset_types",
              "asset_type_id")
 
-  # Assert year_built and quantity are integer-valued and non-negative
+  # Assert year_built is integer-valued and non-negative
   is_integer_col(assets$year_built, "assets", "year_built")
   is_non_negative_col(assets$year_built, "assets", "year_built")
-  is_integer_col(assets$quantity, "assets", "quantity")
+
+  # Assert quantity is non-negative
   is_non_negative_col(assets$quantity, "assets", "quantity")
 
   # Assert year_built < start_year

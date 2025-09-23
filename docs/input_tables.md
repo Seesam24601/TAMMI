@@ -10,7 +10,7 @@ This table contains 1 row for every asset. An asset is a single individual objec
 | `asset_it` | PK | |
 | `asset_type_id` | FK | Keys into `asset_type_id` in `asset_types` table |
 | `year_built` | |  Year the asset was created. This is used to calculate the age of the asset. Cannot be greater than or equal to `start_year`. Must be an integer value and non-negative. |
-| `quantity` | | Number of items in the asset by unit the asset actions are measured in. For most cases this is 1, but for non-discrete assets, such as sections of rail, thiss allows cost to be scaled by size. This must be integer-valued and non-negative. |
+| `quantity` | | Number of items in the asset by unit the asset actions are measured in. For most cases this is 1, but for non-discrete assets, such as sections of rail, thiss allows cost to be scaled by size. This must be non-negative. |
 
 
 ## asset_types
