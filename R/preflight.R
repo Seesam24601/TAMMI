@@ -260,8 +260,7 @@ test_asset_actions <- function(asset_actions, asset_types) {
     "asset_types",
     "asset_type_id")
   
-  # Assert cost is integer-valued and non-negative
-  is_integer_col(asset_actions$cost, "asset_actions", "cost")
+  # Assert cost is non-negative
   is_non_negative_col(asset_actions$cost, "asset_actions", "cost")
 
   # Assert replacement_flag is a flag
