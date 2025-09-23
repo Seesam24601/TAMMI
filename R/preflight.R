@@ -218,6 +218,25 @@ key_exists <- function(keys, valid_keys, df1_name, df2_name, col_name) {
 }
 
 
+sum_to <- function(vector, desired_sum, vector_name) {
+  "
+  Parameters:
+    vector - Aribtrary numeric-valued vector
+    desired_sum - Sum that the values of the vector are desired to equal
+    vector_name - Name of the vector to be used in error message
+
+  Returns:
+    Nothing if sum(vector) = desired_sum. Throws an error otherwise
+  "
+  epsilon = 0.00001 # Use to account for float equality
+  error_message <- paste("Sum of", vector_name, "equals", sum(vector), "- should be", desired_sum)
+
+  if (abs(sum(vector) - desired_sum) > epsilon) {
+    stop(error_message, call. = FALSE)
+  }
+}
+
+
 test_asset_actions <- function(asset_actions, asset_types) {
   "
   Parameters:

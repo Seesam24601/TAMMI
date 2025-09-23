@@ -77,7 +77,7 @@ priority_scores <- function(
   for (field in names(priority_scores)) {
     is_proportion(priority_scores[[field]], paste("The weight associated with", field, "in priority_scores"))
   }
-  # TODO: sum to 1
+  sum_to(priority_scores, 1, "priority_scores")
 
   # Generate priority score for each necessary action
   # Then order from highest to lowest priority
