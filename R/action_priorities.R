@@ -62,7 +62,7 @@ priority_scores <- function(
   priority_scores # priority scores is vector of the form (field = weight)
 ) {
   "
-  TBD
+  See docs/functions.md
   "
 
   # Assert asset_details has all of the fields used for priority scores

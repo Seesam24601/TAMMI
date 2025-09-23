@@ -45,6 +45,12 @@ By default this is the `prioritize_longest_wait` function. This function has the
 
 This function rearranges `necessary_actions` so that it is ordered by longest time the action has been necessary. This is calculated by taking `(current_year - year_built) - age_trigger`.
 
+### Other Options
+
+TAMMI also has the option to use the `priority_scores` function. This function has the additional parameter of `priority_scores` which is a vector of the form `c(field = weight, ...)` which is used to weight the different priority scores. Each field in this vector must be a field in `asset_details` that has only non-negative numbers. And each weight must be a number between 0 and 1 such that the sum of all the weights is equal to 1.
+
+This function rearranges `necessary_actions` so that it is ordered from least to greatest by the weighted sum of the fields from `priority_scores`
+
 
 ## Annual Adjustment
 
