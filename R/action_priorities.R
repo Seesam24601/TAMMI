@@ -68,10 +68,16 @@ priority_scores <- function(
   # Assert asset_details has all of the fields used for priority scores
   columns_in_df(necessary_actions, names(priority_scores), "asset_actions")
 
-  # Assert values for priority scores are proportions
+  # Assert values for priority scores are non-negative
   for (field in names(priority_scores)) {
-    is_proportion_col(necessary_actions, field, "asset_actions")
+    is_non_negative_col(necessary_actions, "asset_actions", field)
   }
+
+  # Assert weights for priority scores are proportions and add to 1
+  for (field in names(priority_scores)) {
+    is_proportion(priority_scores[[field]], paste("The weight associated with", field, "in priority_scores"))
+  }
+  # TODO: sum to 1
 
   # Generate priority score for each necessary action
   # Then order from highest to lowest priority

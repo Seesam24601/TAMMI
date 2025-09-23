@@ -112,6 +112,28 @@ is_non_negative_col <- function(col, df_name, col_name) {
 }
 
 
+is_proportion <- function(x, variable_name) {
+  "
+  Parameters: 
+    x
+    variable_name - Name of x to be used in the error mesage
+
+  Returns:
+    Nothing if x is a number between 0 and 1. Otherwise, it 
+    throws an error.
+  "
+  error_message <- paste(variable_name, "must be a number between 0 and 1")
+
+  tryCatch({
+    if ((x < 0) | (x > 1)) {
+      stop(error_message, call. = FALSE)
+    }
+  }, error = function(msg) {
+      stop(error_message, call. = FALSE)
+    })
+}
+
+
 is_proportion_col <- function(col, df_name, col_name) {
   "
   Parameters: 
