@@ -39,8 +39,8 @@ cost_adjustment_wrapper <- function(supplied_function,
     stop(error_message, call. = FALSE)
   }
 
-  # Assert that the cost field is still integer-valued
-  is_integer_col(asset_details$cost, "asset_details", "cost")
+  # Assert that the cost field is still non-negative
+  is_non_negative_col(asset_details$cost, "asset_details", "cost")
 
   # Return result
   result
@@ -60,5 +60,5 @@ inflation <- function(asset_details,
   year_order(start_year, current_year)
 
   asset_details %>% 
-    mutate(cost = round(cost * (1 + inflation_rate)^(current_year - start_year), 2))
+    mutate(cost = cost * (1 + inflation_rate)^(current_year - start_year))
 }
