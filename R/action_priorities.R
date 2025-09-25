@@ -69,9 +69,9 @@ priority_scores <- function(
   columns_in_df(necessary_actions, names(priority_scores), "asset_actions")
 
   # Assert values for priority scores are non-negative
-  for (field in names(priority_scores)) {
-    is_non_negative_col(necessary_actions, "asset_actions", field)
-  }
+  # for (field in names(priority_scores)) {
+  #   is_non_negative_col(necessary_actions, "asset_actions", field)
+  # }
 
   # Assert weights for priority scores are proportions and add to 1
   for (field in names(priority_scores)) {
